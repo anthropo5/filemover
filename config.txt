@@ -1,0 +1,9 @@
+main folder: F:\you\to\define\this\absolute\path\_testfolder
+doc: txt pdf xlsx pptx doc docx
+exe: msi exe
+gp5: gp3 gp4 gp5
+img: jpg jpeg png gif
+iso: iso
+music: mp3 flac
+rar: 7zip rar zip
+video: mp4
