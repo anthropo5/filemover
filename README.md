@@ -1,4 +1,4 @@
-# filecopier
+# filemover
 Application moves files from main-folder to sub-folder depending on file extension.
 You have to define main-folder, sub-folders and extensions in "config.txt".
 Personally I use it to segregating files in download folder.
