@@ -24,6 +24,8 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 - [ ] Optional flag if directories should be moved to default folder
 - [ ] User can specify which extensions wouldn't be copied to "default" folder
 - [ ] Move files form the biggest to the lowest size
+- [ ] Progress bar to each file
 - [ ] Use project manager - maven (or gradle in future)
 - [ ] Add log4j
 - [ ] Spearate View and Contoller - currently View = Controller + View
+- [ ] Add some tests with JUnit
