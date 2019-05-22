@@ -14,7 +14,7 @@ public class Main {
         Application app = new Application();
         app.run();
 
-//        UserInterface ui = new UserInterface(app);
-//        ui.run();
+        UserInterface ui = new UserInterface(app);
+        ui.run();
     }
 }

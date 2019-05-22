@@ -1,5 +1,7 @@
 # ignoring mave - https://github.com/github/gitignore/blob/master/Maven.gitignore
 
+filemover.iml
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup

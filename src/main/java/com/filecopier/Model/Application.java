@@ -1,45 +1,33 @@
 package com.filecopier.Model;
 
-import com.filecopier.Logger.Logger;
-import com.filecopier.Logger.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/*
-
-Application moves (copy -> delete) files from defined folder to sub-folders.
-Files are related to sub-folders with extension.
-Relation is defined in config.txt
-
- todo
-    how to refresh ui ? sth like progress bar
-    optional move to default folder
-    main directory class - allows user to add few folders to manage
-
-*/
-
-
 public class Application {
+
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
+
     private Config cfg;
     private List<Directory> directories;
     private List<FileInfo> filesInfo;
-    private HashMap<String, Path> extensionsToFolderPath;
+    private Map<String, Path> extensionsToFolderPath;
+    private Map<String, Directory> nameToDir;
 
     public Application() {
         this.directories = new ArrayList<>();
         this.filesInfo = new ArrayList<>();
         this.cfg = new Config(this.directories);
         this.extensionsToFolderPath = new HashMap<>();
+        this.nameToDir = new HashMap<>();
     }
 
 
@@ -50,16 +38,20 @@ public class Application {
         cfg.load();
         createAllFolders();
         addExtensionsToMap();
+        initNameToDirMap();
         loadFilesFromMainFolder();
     }
 
     public void run() {
         init();
-//
-//        cfg.save();
-//        cfg.read();
-//        cfg.load();
-//        cfg.show();
+
+
+        Directory dir = directories.get(0);
+        System.out.println(dir);
+        dir.removeExtension("txt");
+        dir.addExtension("mp4");
+        dir.removeExtension("mp4");
+        dir.removeExtension("mp4");
     }
 
 
@@ -74,7 +66,7 @@ public class Application {
         Path dst = Config.getPathToMainFolder();
         int i = 1;
         int size = countFilesToCopy();
-        Logger.log("Files to copy: " + size, Message.INFO);
+        log.debug("Files to copy: " + size);
 
         StringBuilder sb = new StringBuilder();
         for (FileInfo file : filesInfo) {
@@ -86,7 +78,7 @@ public class Application {
                 if (dst == null) {
                     sb.append("Files has not defined extension: ").append(file.getExtension())
                                 .append(" file name: ").append(file.getPath().getFileName());
-                    Logger.log(sb.toString(), Message.WARNING);
+                    log.warn(sb.toString());
                     continue;
                 }
             }
@@ -94,10 +86,10 @@ public class Application {
             try {
                 if (file.moveFile(dst)) {
                     sb.append("File: ").append(file.getPath().getFileName()).append("   moved to: ").append(dst.getFileName());
-                    Logger.log(sb.toString(), Message.INFO);
+                    log.info(sb.toString());
                 }
             } catch (IOException e) {
-                Logger.log(sb.append(e.getMessage()).toString(), Message.ERROR);
+                log.error(sb.append(e.getMessage()).toString());
             }
         }
     }
@@ -105,7 +97,7 @@ public class Application {
     public void moveFilesToSubFolders() {
 
         if (loadFilesFromMainFolder() < 1) {
-            Logger.log("There is no files to copy in main folder.", Message.INFO);
+            log.info("There is no files to copy in main folder.");
             return;
         }
 
@@ -115,7 +107,7 @@ public class Application {
     public void moveAllFilesToMainFolder() {
 
         if (loadFilesFromAllFolders() < 1) {
-            Logger.log("There is nothing co copy - folders are empty", Message.INFO);
+            log.info("There is nothing co copy - folders are empty");
             return;
         }
 
@@ -139,13 +131,20 @@ public class Application {
             for (String ext :
                     dir.getExtensions()) {
                 extensionsToFolderPath.put(ext, dir.getPath());
-                Logger.log(ext + " ext is related with " + dir.getPath().getFileName(), Message.DEBUG);
+//                log.debug(ext + " ext is related with " + dir.getPath().getFileName());
             }
         }
     }
 
+    private void initNameToDirMap() {
+        for (Directory dir :
+                directories) {
+            this.nameToDir.put(dir.getName(), dir);
+        }
+    }
+
     private int loadFilesFromAllFolders() {
-        Logger.log("FilesInfo is cleared ", Message.DEBUG);
+        log.debug("FilesInfo is cleared ");
         this.filesInfo.clear();
         try (Stream<Path> walk = Files.walk(Config.getPathToMainFolder())) {
 
@@ -155,16 +154,16 @@ public class Application {
                     .collect(Collectors.toList());
 
         } catch (IOException e) {
-            Logger.log("Couldn't load files from all folders" + e.getMessage(), Message.ERROR);
+            log.error("Couldn't load files from all folders" + e.getMessage());
 //            e.printStackTrace();
         }
-        Logger.log(filesInfo.size() + " files has been loaded from all folders ", Message.DEBUG);
+        log.debug(filesInfo.size() + " files has been loaded from all folders ");
         return this.filesInfo.size();
     }
 
     private int loadFilesFromMainFolder() {
         Path dir = Config.getPathToMainFolder();
-        Logger.log("FilesInfo is cleared ", Message.DEBUG);
+        log.debug("FilesInfo is cleared ");
         this.filesInfo.clear();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path fileName : stream) {
@@ -182,10 +181,10 @@ public class Application {
         } catch (IOException | DirectoryIteratorException e) {
             // IOException can never be thrown by the iteration.
             // In this snippet, it can only be thrown by newDirectoryStream.
-            Logger.log("Couldn't load files from main folder " + e.getMessage(), Message.ERROR);
+            log.error("Couldn't load files from main folder " + e.getMessage());
 
         }
-        Logger.log(filesInfo.size() + " files has been loaded from main folder ", Message.DEBUG);
+        log.debug(filesInfo.size() + " files has been loaded from main folder ");
         return this.filesInfo.size();
     }
 
@@ -196,24 +195,57 @@ public class Application {
 
 
 
-    public void addDirectory(String name) {
-        this.directories.add(new Directory(name));
+    public Directory getDirectoryByName(String name) {
+        return nameToDir.get(name);
+    }
+
+
+
+    public boolean addDirectory(String name) {
+        log.debug("Adding directory " + name);
+        Directory toAdd = new Directory(name);
+        if(!directories.contains(toAdd)) {
+            this.directories.add(toAdd);
+            this.nameToDir.put(name, toAdd);
+            log.debug("     Directory added" );
+            return true;
+        }
+        log.debug("     Directory already exists");
+        return false;
+    }
+
+    public boolean deleteDirectory(Directory dir) {
+//        Directory toDelete = new Directory(name);
+        log.debug("Deleting directory: " + dir.getName());
+        if (directories.contains(dir)) {
+            Iterator<Directory> it = directories.iterator();
+            while (it.hasNext()) {
+                Directory toDelete = it.next();
+                if (dir.equals(toDelete)) {
+                    it.remove();
+                    log.debug("     dir deleted");
+                    return true;
+                }
+            }
+        }
+        log.debug("     not in a list");
+        return false;
     }
 
 
 
     public void sortFilesBy(SortingOption sortingOption) {
         if(sortingOption == SortingOption.NAME) {
-            Logger.log("Sorting by name ", Message.DEBUG);
+//            Logger.log("Sorting by name ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing( file -> file.getPath().getFileName().toString()));
         } else if (sortingOption == SortingOption.EXTENSION) {
-            Logger.log("Sorting by extension ", Message.DEBUG);
+//            Logger.log("Sorting by extension ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing(FileInfo::getExtension));
         } else if (sortingOption == SortingOption.SIZE) {
-            Logger.log("Sorting by size ", Message.DEBUG);
+//            Logger.log("Sorting by size ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing(FileInfo::getSize));
         } else if (sortingOption == SortingOption.CREATION_TIME) {
-            Logger.log("Sorting by creation time ", Message.DEBUG);
+//            Logger.log("Sorting by creation time ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing(FileInfo::getCreationTime));
         }
     }
