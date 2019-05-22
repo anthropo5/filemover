@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Directory {
     private String name;
@@ -21,6 +22,10 @@ public class Directory {
         this.name = name;
         this.path = Paths.get(Config.getPathToMainFolder() + FileSystems.getDefault().getSeparator() + this.name);
         this.extensions = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<String> getExtensions() {
@@ -64,5 +69,18 @@ public class Directory {
             Logger.log("Cant create directory " + e.getMessage(), Message.ERROR);
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Directory directory = (Directory) o;
+        return path.equals(directory.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
     }
 }

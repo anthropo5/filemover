@@ -76,7 +76,7 @@ public class UserInterface {
                     break;
                 case 0:
                     exit = true;
-                    app.makeAndSaveConfig();
+//                    app.makeAndSaveConfig();
                     break;
 
                 default:
