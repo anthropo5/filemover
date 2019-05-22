@@ -44,6 +44,14 @@ public class Application {
 
     public void run() {
         init();
+
+
+        Directory dir = directories.get(0);
+        System.out.println(dir);
+        dir.removeExtension("txt");
+        dir.addExtension("mp4");
+        dir.removeExtension("mp4");
+        dir.removeExtension("mp4");
     }
 
 
@@ -187,11 +195,18 @@ public class Application {
 
 
 
+    public Directory getDirectoryByName(String name) {
+        return nameToDir.get(name);
+    }
+
+
+
     public boolean addDirectory(String name) {
         log.debug("Adding directory " + name);
         Directory toAdd = new Directory(name);
         if(!directories.contains(toAdd)) {
-            this.directories.add(new Directory(name));
+            this.directories.add(toAdd);
+            this.nameToDir.put(name, toAdd);
             log.debug("     Directory added" );
             return true;
         }

@@ -1,7 +1,7 @@
 package com.filecopier.Model;
 
-import com.filecopier.Logger.Logger;
-import com.filecopier.Logger.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -9,10 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 public class Directory {
+    private static final Logger log = LoggerFactory.getLogger(Directory.class);
+
     private String name;
     private Path path;
     private List<String> extensions;
@@ -38,6 +41,26 @@ public class Directory {
 
     public void addExtension(String ext) {
         extensions.add(ext);
+        log.debug("Adding ext: " + ext + " to: " + this.getName());
+    }
+
+    public boolean removeExtension(String ext) {
+        log.debug("Removing extension " + ext + " from: " + this.getName());
+        if (!extensions.contains(ext)) {
+            log.debug("     ext is not related with folder " + this.name);
+            return false;
+        }
+
+        Iterator<String> iterator = extensions.iterator();
+        while (iterator.hasNext()) {
+            String toDelete = iterator.next();
+            if (toDelete.equals(ext)) {
+                iterator.remove();
+                log.debug("     ext has been removed: " + ext);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -60,13 +83,13 @@ public class Directory {
     public void createFolder() {
         try {
             if(Files.isDirectory(this.path)) {
-                Logger.log("Directory " + this.name + " already exists", Message.DEBUG);
+                log.debug("Directory " + this.name + " already exists");
                 return;
             }
             Files.createDirectory(this.path);
-            Logger.log("Directory created: " + this.name, Message.INFO);
+            log.info("Directory created: " + this.name);
         } catch (IOException e) {
-            Logger.log("Cant create directory " + e.getMessage(), Message.ERROR);
+            log.error("Cant create directory " + e.getMessage());
             e.printStackTrace();
         }
     }

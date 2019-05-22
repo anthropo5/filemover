@@ -3,6 +3,7 @@ package com.filecopier.View;
 import com.filecopier.Logger.Logger;
 import com.filecopier.Model.Application;
 import com.filecopier.Model.Config;
+import com.filecopier.Model.Directory;
 import com.filecopier.Model.SortingOption;
 
 import java.util.Scanner;
@@ -74,7 +75,34 @@ public class UserInterface {
                     app.sortFilesBy(SortingOption.CREATION_TIME);
                     app.showFiles();
                     break;
-                case 0:
+                case 10:
+                {
+                    System.out.println("Type a folder name: ");
+                    String name = reader.nextLine();
+                    app.addDirectory(name); // name validation
+                    break;
+                }
+                case 11:
+                {
+                    System.out.println("Choose a folder - type a name");
+                    String line = reader.nextLine();
+                    Directory dir = app.getDirectoryByName(line);
+                    if (dir == null) {
+                        System.out.println("Directory doesnt exists");
+                    } else {
+                        System.out.println("Type extensions separated by space: ");
+                        line = reader.nextLine();
+                        String[] exts = line.trim().split(" ");
+                        for (int i = 0; i < exts.length; i++) {
+                            dir.addExtension(exts[i]);
+                        }
+                    }
+                    break;
+                }
+                case 12:
+                    exit = true;
+                    break;
+                case 13:
                     exit = true;
 //                    app.makeAndSaveConfig();
                     break;
@@ -105,7 +133,10 @@ public class UserInterface {
         sb.append(option++).append(". Sort files by size \n");
         sb.append(option++).append(". Sort files by extension \n");
         sb.append(option++).append(". Sort files by creation time \n");
-        sb.append("\n0. Exit\n");
+        sb.append(option++).append(". Add folder \n");
+        sb.append(option++).append(". Add extensions to folder \n");
+        sb.append(option++).append(". Exit\n");
+//        sb.append(option++).append(". Exit and save config\n");
 
         System.out.println(sb.toString());
     }
