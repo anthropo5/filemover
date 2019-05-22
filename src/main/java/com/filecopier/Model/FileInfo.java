@@ -2,14 +2,16 @@ package com.filecopier.Model;
 
 import com.filecopier.Logger.Logger;
 import com.filecopier.Logger.Message;
-//import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.Comparator;
 import java.util.Objects;
+
+//import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 public class FileInfo {
     private Path path;

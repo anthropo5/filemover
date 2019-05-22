@@ -1,4 +1,4 @@
-main folder: F:\you\to\define\this\absolute\path\_testfolder
+main folder: /home/kusy/git/filemover/_testfolder
 doc: txt pdf xlsx pptx doc docx
 exe: msi exe
 gp5: gp3 gp4 gp5
