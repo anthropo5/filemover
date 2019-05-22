@@ -16,19 +16,26 @@ In next lines you have to specify folder name and extensions of files which be m
 ## _testfolder
 Contains empty files with diffrent extensions. Allows you to test aplication. Remember to specify path in config.txt
 
-
 ## TODO
-- [ ] Add MainFolder class -> allows user to manage few folders
+### In progess
+
+- [ ] Change simple Logger to Logback
+- [ ] CRUD operations on directories, extensions maybe files
 - [ ] Specify destination folder path for extension e.g. in config.txt: `F:\From\main_folder\to\diffrent\location: jpg`
+
+### In future
 - [ ] Create optional default folder - all files with not recognized extensions would be moved to "default" folder
 - [ ] Optional flag if directories should be moved to default folder
 - [ ] User can specify which extensions wouldn't be copied to "default" folder
+
+### In far future
+- [ ] Add MainFolder class -> allows user to manage few folders
 - [ ] Move files form the lowest to the biggest size
 - [ ] Maybe move big files in new thread - what - observable pattern to progress bar? user input would be blocked anyway.
 - [ ] Progress bar to each file
-- [X] Use project manager - maven (or gradle in future)
-- [X] Add Logback
-- [ ] Change simpler Logger to Logback
 - [ ] Spearate View and Contoller - currently View = Controller + View
 - [ ] Add some tests with JUnit
-- [ ] CRUD operations on direcotires, extensions maybe files
+
+### Completed
+- [X] Use project manager - maven (or gradle in future)
+- [X] Add Logback
