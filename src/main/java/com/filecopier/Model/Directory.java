@@ -40,6 +40,10 @@ public class Directory {
     }
 
     public void addExtension(String ext) {
+        if (extensions.contains(ext)) {
+            log.debug("Ext already added");
+            return;
+        }
         extensions.add(ext);
         log.debug("Adding ext: " + ext + " to: " + this.getName());
     }

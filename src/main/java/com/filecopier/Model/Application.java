@@ -214,13 +214,13 @@ public class Application {
         return false;
     }
 
-    public boolean deleteDirectory(String name) {
-        Directory toDelete = new Directory(name);
-        log.debug("Deleting directory: " + name);
-        if (directories.contains(toDelete)) {
+    public boolean deleteDirectory(Directory dir) {
+//        Directory toDelete = new Directory(name);
+        log.debug("Deleting directory: " + dir.getName());
+        if (directories.contains(dir)) {
             Iterator<Directory> it = directories.iterator();
             while (it.hasNext()) {
-                Directory dir = it.next();
+                Directory toDelete = it.next();
                 if (dir.equals(toDelete)) {
                     it.remove();
                     log.debug("     dir deleted");

@@ -45,16 +45,16 @@ public class UserInterface {
                 case 3:
                     app.moveFilesToSubFolders();
                     System.out.println("\nErrors and warnings occured while processing");
-                    Logger.showErrors();
-                    Logger.showWarnings();
-                    Logger.clear();
+//                    Logger.showErrors();
+//                    Logger.showWarnings();
+//                    Logger.clear();
                     break;
                 case 4:
                     app.moveAllFilesToMainFolder();
                     System.out.println("\nErrors and warnings occured while processing");
-                    Logger.showErrors();
-                    Logger.showWarnings();
-                    Logger.clear();
+//                    Logger.showErrors();
+//                    Logger.showWarnings();
+//                    Logger.clear();
                     break;
                 case 5:
                     showMainFolder();
@@ -99,13 +99,40 @@ public class UserInterface {
                     }
                     break;
                 }
-                case 12:
+                case 12: {
+                    System.out.println("Type folder to delete: ");
+                    String line = reader.nextLine();
+                    Directory dir = app.getDirectoryByName(line);
+                    if (dir != null) {
+                        app.deleteDirectory(dir);
+                    } else {
+                        System.out.println("Directory doesnt exists");
+                    }
+                    break;
+                }
+                case 13: {
+                    System.out.println("Type folder to change");
+                    String line = reader.nextLine();
+                    Directory dir = app.getDirectoryByName(line);
+                    if (dir == null) {
+                        System.out.println("Directory doesnt exists");
+                        break;
+                    }
+                    System.out.println("Type exts to delete");
+                    line = reader.nextLine();
+                    String[] exts = line.trim().split(" ");
+                    for (int i = 0; i < exts.length; i++) {
+                        dir.removeExtension(exts[i]);
+                    }
+                    break;
+                }
+                case 99:
                     exit = true;
                     break;
-                case 13:
-                    exit = true;
+//                case 90:
+//                    exit = true;
 //                    app.makeAndSaveConfig();
-                    break;
+//                    break;
 
                 default:
                     System.out.println("Choose appropiate option");
@@ -133,9 +160,12 @@ public class UserInterface {
         sb.append(option++).append(". Sort files by size \n");
         sb.append(option++).append(". Sort files by extension \n");
         sb.append(option++).append(". Sort files by creation time \n");
+        sb.append("\n");
         sb.append(option++).append(". Add folder \n");
         sb.append(option++).append(". Add extensions to folder \n");
-        sb.append(option++).append(". Exit\n");
+        sb.append(option++).append(". Delete directory \n");
+        sb.append(option++).append(". Remove extensions from specified directory \n");
+        sb.append("99. Exit\n");
 //        sb.append(option++).append(". Exit and save config\n");
 
         System.out.println(sb.toString());

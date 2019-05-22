@@ -1,7 +1,8 @@
 package com.filecopier.Model;
 
-import com.filecopier.Logger.Logger;
-import com.filecopier.Logger.Message;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +15,8 @@ import java.util.Objects;
 //import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 public class FileInfo {
+    private static final Logger log = LoggerFactory.getLogger(FileInfo.class);
+
     private Path path;
     private long size;
     private FileTime creationTime;
@@ -62,7 +65,7 @@ public class FileInfo {
 
     public void deleteFile() throws IOException {
         Files.delete(this.path);
-        Logger.log(this.path.getFileName() + " has been deleted.", Message.DEBUG);
+        log.debug(this.path.getFileName() + " has been deleted.");
     }
 
 

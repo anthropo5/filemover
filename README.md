@@ -19,8 +19,6 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 ## TODO
 ### In progess
 
-- [ ] Change simple Logger to Logback
-- [ ] CRUD operations on directories, extensions maybe files
 - [ ] Specify destination folder path for extension e.g. in config.txt: `F:\From\main_folder\to\diffrent\location: jpg`
 
 ### In future
@@ -39,3 +37,5 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 ### Completed
 - [X] Use project manager - maven (or gradle in future)
 - [X] Add Logback
+- [X] Change simple Logger to Logback
+- [X] CRUD operations on directories
