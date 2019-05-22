@@ -23,9 +23,12 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 - [ ] Create optional default folder - all files with not recognized extensions would be moved to "default" folder
 - [ ] Optional flag if directories should be moved to default folder
 - [ ] User can specify which extensions wouldn't be copied to "default" folder
-- [ ] Move files form the biggest to the lowest size
+- [ ] Move files form the lowest to the biggest size
+- [ ] Maybe move big files in new thread - what - observable pattern to progress bar? user input would be blocked anyway.
 - [ ] Progress bar to each file
-- [ ] Use project manager - maven (or gradle in future)
-- [ ] Add log4j
+- [X] Use project manager - maven (or gradle in future)
+- [X] Add Logback
+- [ ] Change simpler Logger to Logback
 - [ ] Spearate View and Contoller - currently View = Controller + View
 - [ ] Add some tests with JUnit
+- [ ] CRUD operations on direcotires, extensions maybe files
