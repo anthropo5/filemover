@@ -1,7 +1,7 @@
 package com.filecopier.Model;
 
-import com.filecopier.Logger.Logger;
-import com.filecopier.Logger.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -14,6 +14,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Config {
+
+    // TODO
+    //  config path - config has to be saved in folder with program. propably have to use relative path ./config.txt ?
+
+    private static final Logger log = LoggerFactory.getLogger(Config.class);
+
     private final String CONFIG_FILE_NAME = "config.txt";
 
     // how to store this as final? static initialization?
@@ -36,11 +42,11 @@ public class Config {
     }
 
     public void read() {
-        Logger.log("Reading config form file", Message.DEBUG);
+        log.debug("Reading config form file");
         try (Stream<String> stream = Files.lines(Paths.get(CONFIG_FILE_NAME))) {
             lines = stream.collect(Collectors.toList());
         } catch (IOException e) {
-            Logger.log("Reading from config file failed " + e.getMessage(), Message.ERROR);
+            log.debug("Reading from config file failed");
 //            e.printStackTrace();
         }
     }
@@ -55,7 +61,7 @@ public class Config {
         String path = lines.get(0);
         path = path.substring(path.indexOf(":") + 1).trim() + FileSystems.getDefault().getSeparator();
         Config.pathToMainFolder = Paths.get(path);
-        Logger.log("Loaded main folder: " + path, Message.DEBUG);
+        log.debug("Loaded main folder: " + path);
     }
 
     public void loadFoldersAndExtensions() {
@@ -65,17 +71,44 @@ public class Config {
             String[] extensions = parts[1].trim().split(" ");
             Directory dir = new Directory(folderName);
             directories.add(dir);
-            Logger.log("Loaded folder: " + folderName, Message.DEBUG);
+            log.debug("Loaded folder: " + folderName);
             for (int j = 0; j < extensions.length; j++) {
                 dir.addExtension(extensions[j]);
-                Logger.log("    Loaded ext: " + extensions[j], Message.DEBUG);
+                log.debug("    Loaded ext: " + extensions[j]);
             }
         }
     }
 
     // whole file or only line with specific folder?
-    public void save() {
+    public String make() {
+        log.debug("Making config");
+        StringBuilder sb = new StringBuilder();
 
+        sb.append("main folder: ").append(Config.getPathToMainFolder());
+        log.debug("Making main folder " + Config.getPathToMainFolder());
+        for (Directory dir :
+                directories) {
+            sb.append("\n").append(dir.getPath().getFileName()).append(": ");
+            log.debug("Making folder: " + dir.getPath() );
+            for (String ext :
+                    dir.getExtensions()) {
+                sb.append(ext).append(" ");
+                log.debug("    Making ext: " + ext);
+            }
+        }
+        return sb.toString();
+    }
+    
+    public void save() {
+        try {
+            Path cfgPath = Paths.get(Config.getPathToMainFolder().toString(), "config.txt");
+            log.debug("Saving config");
+            Files.write(cfgPath, this.make().getBytes());
+            log.debug("Config saved");
+        } catch (IOException e) {
+            log.error("Cannot save config file");
+            e.printStackTrace();
+        }
     }
 
     public void show() {

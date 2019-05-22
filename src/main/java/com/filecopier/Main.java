@@ -10,13 +10,11 @@ public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-	// write your code here
-        Application app = new Application();
-//        app.run();
-        UserInterface ui = new UserInterface(app);
 
-        log.info("Starting application");
-        ui.run();
-        log.info("Exiting application");
+        Application app = new Application();
+        app.run();
+
+//        UserInterface ui = new UserInterface(app);
+//        ui.run();
     }
 }

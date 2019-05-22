@@ -16,6 +16,7 @@ public class Directory {
     private Path path;
     private List<String> extensions;
 
+
     public Directory(String name) {
         this.name = name;
         this.path = Paths.get(Config.getPathToMainFolder() + FileSystems.getDefault().getSeparator() + this.name);
