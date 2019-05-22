@@ -55,6 +55,11 @@ public class Application {
 
     public void run() {
         init();
+//
+//        cfg.save();
+//        cfg.read();
+//        cfg.load();
+//        cfg.show();
     }
 
 
@@ -184,6 +189,17 @@ public class Application {
         return this.filesInfo.size();
     }
 
+    public void makeAndSaveConfig() {
+        cfg.make();
+        cfg.save();
+    }
+
+
+
+    public void addDirectory(String name) {
+        this.directories.add(new Directory(name));
+    }
+
 
 
     public void sortFilesBy(SortingOption sortingOption) {
@@ -201,6 +217,7 @@ public class Application {
             filesInfo.sort(Comparator.comparing(FileInfo::getCreationTime));
         }
     }
+
 
 
     public void showFiles() {
