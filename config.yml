@@ -1,0 +1,54 @@
+#######################
+##
+## DO NOT REMOVE ANYTHING ELSE THAN
+##
+##########################################
+
+##############
+# Path to main folder where application will working
+
+main folder: /home/kusy/git/filemover/_testfolder
+
+directories:
+  - name: doc
+    path: '/home/kusy/git/filemover/_testfolder2'
+    extensions: [txt pdf xlsx pptx doc docx]
+
+  - name: img
+    extensions: [jpg jpeg png gif]
+
+  - name: video
+    extensions: [mp4]
+
+  - name: music
+    extensions: [mp3 flac]
+
+  - name: rar
+    extensions: [7zip rar zip]
+
+  - name: exe
+    extensions: [msi exe]
+
+  - name: gp5
+    extensions: [gp3 gp4 gp5 gpx]
+
+  - name: iso
+    extensions: [iso]
+
+##############
+# Directories which will be created in specified path or in mainFolder if 'path' wouldn't be specified.
+# name - folder name
+# path - absolute path to folder where this folder will be created. if not specified folder will be created in mainFolder
+#        e.g. C:\user1\download or /home/user/download
+# extensions - files extensions which would be stored in this folder
+# Directories has to be separated by ---
+#---
+#name: doc
+#path:
+#extensions: [txt, pdf, xlsx, pptx, doc, docx]
+#---
+#name: image
+#path:
+#extensions: [jpg, jpeg, png, tiff, gif]
+#
+#

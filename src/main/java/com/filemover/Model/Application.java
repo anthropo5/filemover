@@ -1,4 +1,4 @@
-package com.filecopier.Model;
+package com.filemover.Model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +14,9 @@ import java.util.stream.Stream;
 
 public class Application {
 
+    // TODO
+    //  sprawdzać czy rozszerzenie jest dodane do jakiegokolwiek folderu
+
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     private Config cfg;
@@ -25,33 +28,28 @@ public class Application {
     public Application() {
         this.directories = new ArrayList<>();
         this.filesInfo = new ArrayList<>();
-        this.cfg = new Config(this.directories);
         this.extensionsToFolderPath = new HashMap<>();
         this.nameToDir = new HashMap<>();
+        this.cfg = new Config(this);
     }
 
-
-
-
     private void init() {
-        cfg.read();
-        cfg.load();
+//        cfg.read();
+        cfg.loadYAMLFile();
+//        cfg.load();
         createAllFolders();
         addExtensionsToMap();
         initNameToDirMap();
         loadFilesFromMainFolder();
+
+//        System.out.println(directories);
+
     }
 
     public void run() {
         init();
 
-
-        Directory dir = directories.get(0);
-        System.out.println(dir);
-        dir.removeExtension("txt");
-        dir.addExtension("mp4");
-        dir.removeExtension("mp4");
-        dir.removeExtension("mp4");
+        cfg.makeYAML();
     }
 
 
@@ -188,10 +186,10 @@ public class Application {
         return this.filesInfo.size();
     }
 
-    public void makeAndSaveConfig() {
-        cfg.make();
-        cfg.save();
-    }
+//    public void makeAndSaveConfig() {
+//        cfg.make();
+//        cfg.save();
+//    }
 
 
 
@@ -214,6 +212,10 @@ public class Application {
         return false;
     }
 
+    public void addDirectory(Directory dir) {
+        this.directories.add(dir);
+    }
+
     public boolean deleteDirectory(Directory dir) {
 //        Directory toDelete = new Directory(name);
         log.debug("Deleting directory: " + dir.getName());
@@ -230,6 +232,10 @@ public class Application {
         }
         log.debug("     not in a list");
         return false;
+    }
+
+    public List<Directory> getDirectories() {
+        return this.directories;
     }
 
 

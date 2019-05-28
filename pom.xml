@@ -12,6 +12,7 @@
         <java.version>11</java.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <logback.version>1.2.3</logback.version>
+        <snakeyaml.version>1.24</snakeyaml.version>
     </properties>
 
     <dependencies>
@@ -28,7 +29,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.24</version>
+            <version>${snakeyaml.version}</version>
         </dependency>
 
     </dependencies>

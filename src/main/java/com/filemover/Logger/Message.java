@@ -1,4 +1,4 @@
-package com.filecopier.Logger;
+package com.filemover.Logger;
 
 public enum Message {
     INFO,

@@ -1,17 +1,18 @@
-package com.filecopier.Model;
+package com.filemover.Model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.nio.file.*;
+import java.util.*;
+import static com.filemover.Model.Constants.*;
+
+/*
+    TODO
+        check create folder - testfolder2 is empty - why?
+ */
 
 public class Directory {
     private static final Logger log = LoggerFactory.getLogger(Directory.class);
@@ -20,11 +21,18 @@ public class Directory {
     private Path path;
     private List<String> extensions;
 
+    public Directory(String name, String path, List<String> extensions) {
+        this.name = name;
+        this.extensions = extensions;
+        if (path == null) {
+            this.path = Config.getPathToMainFolder();
+        } else {
+            this.path = Paths.get(path);
+        }
+    }
 
     public Directory(String name) {
-        this.name = name;
-        this.path = Paths.get(Config.getPathToMainFolder() + FileSystems.getDefault().getSeparator() + this.name);
-        this.extensions = new ArrayList<>();
+        this(name, null, new ArrayList<>());
     }
 
     public String getName() {
@@ -67,31 +75,23 @@ public class Directory {
         return false;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Folder name:        ").append(name);
-        sb.append("\n       Extensions:  ");
-
-
-        for (int j = 0; j < extensions.size(); j++) {
-            sb.append(extensions.get(j) + " ");
-            if ((j + 1) % 4 == 0) {
-                sb.append("\n                    ");
-            }
-        }
-        sb.append("\n");
-        return sb.toString();
-    }
 
     public void createFolder() {
         try {
-            if(Files.isDirectory(this.path)) {
+
+            if (!Files.exists(this.path)) {
+                throw new FileNotFoundException("Directory \"" + this.name + "\" do not exists. Check path in config.yml file");
+            }
+            if (Files.isDirectory(this.path)) {
                 log.debug("Directory " + this.name + " already exists");
                 return;
+//                throw new FileAlreadyExistsException("Directory \"" + this.name + "\" already exists");
             }
-            Files.createDirectory(this.path);
+            Path path = Paths.get(this.path.toString() + FileSystems.getDefault().getSeparator() + this.name);
+            Files.createDirectory(path);
             log.info("Directory created: " + this.name);
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
         } catch (IOException e) {
             log.error("Cant create directory " + e.getMessage());
             e.printStackTrace();
@@ -110,4 +110,34 @@ public class Directory {
     public int hashCode() {
         return Objects.hash(path);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Folder name:        ").append(name);
+        sb.append("\n       Path:  ");
+        sb.append(this.path.toString());
+        sb.append("\n       Extensions:  ");
+
+        for (int j = 0; j < extensions.size(); j++) {
+            sb.append(extensions.get(j) + " ");
+            if ((j + 1) % 4 == 0) {
+                sb.append("\n                    ");
+            }
+        }
+
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> dir = new LinkedHashMap<>();
+        dir.put(PROP_NAME, this.name);
+        if (!this.path.toString().equals(Config.getPathToMainFolder().toString())) {
+            dir.put(PROP_PATH, this.path.toString());
+        }
+        dir.put(PROP_EXTENSIONS, this.extensions);
+        return dir;
+    }
+
 }

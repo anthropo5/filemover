@@ -1,7 +1,6 @@
-package com.filecopier;
+package com.filemover;
 
-import com.filecopier.Model.Application;
-import com.filecopier.View.UserInterface;
+import com.filemover.Model.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ public class Main {
         Application app = new Application();
         app.run();
 
-        UserInterface ui = new UserInterface(app);
-        ui.run();
+//        UserInterface ui = new UserInterface(app);
+//        ui.run();
     }
 }

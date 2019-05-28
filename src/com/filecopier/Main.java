@@ -1,7 +1,7 @@
-package com.filecopier;
+package com.filemover;
 
-import com.filecopier.Model.Application;
-import com.filecopier.View.UserInterface;
+import com.filemover.Model.Application;
+import com.filemover.View.UserInterface;
 
 public class Main {
 

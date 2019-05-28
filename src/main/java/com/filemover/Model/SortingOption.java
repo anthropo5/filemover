@@ -1,4 +1,4 @@
-package com.filecopier.Model;
+package com.filemover.Model;
 
 public enum SortingOption {
     NAME,

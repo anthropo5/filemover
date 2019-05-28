@@ -1,4 +1,4 @@
-package com.filecopier.Logger;
+package com.filemover.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

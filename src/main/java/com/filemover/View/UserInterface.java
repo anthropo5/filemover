@@ -1,10 +1,9 @@
-package com.filecopier.View;
+package com.filemover.View;
 
-import com.filecopier.Logger.Logger;
-import com.filecopier.Model.Application;
-import com.filecopier.Model.Config;
-import com.filecopier.Model.Directory;
-import com.filecopier.Model.SortingOption;
+import com.filemover.Model.Application;
+import com.filemover.Model.Config;
+import com.filemover.Model.Directory;
+import com.filemover.Model.SortingOption;
 
 import java.util.Scanner;
 

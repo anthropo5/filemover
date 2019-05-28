@@ -1,7 +1,7 @@
-package com.filecopier.Model;
+package com.filemover.Model;
 
-import com.filecopier.Logger.Logger;
-import com.filecopier.Logger.Message;
+import com.filemover.Logger.Logger;
+import com.filemover.Logger.Message;
 //import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.io.IOException;
