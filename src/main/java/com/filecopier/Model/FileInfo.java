@@ -12,8 +12,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Objects;
 
-//import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 public class FileInfo {
     private static final Logger log = LoggerFactory.getLogger(FileInfo.class);
 
