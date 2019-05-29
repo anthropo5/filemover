@@ -1,5 +1,6 @@
 package com.filemover.Model;
 
+import com.filemover.Utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -37,14 +38,22 @@ public class Config {
     }
 
     public void loadDirectories(List<Object> directories) {
+        log.debug("Loading of directories delegated to Application");
         for (Object obj :
                 directories) {
             Map<String, Object> props = (Map<String, Object>) obj;
             String name = (String) props.get(PROP_NAME);
             String path = (String) props.get(PROP_PATH);
-            List<String> extensions = (List<String>) props.get(PROP_EXTENSIONS);
-
-            Directory dir = new Directory(name, path, extensions);
+            String extensions = (String) props.get(PROP_EXTENSIONS);
+            log.debug(extensions);
+            String[] tmp = StringUtils.pepare(extensions).split("\\s+");
+            List<String> exts = new ArrayList<>();
+            for (String ext :
+                    tmp) {
+                exts.add(ext);
+//                System.out.println(ext);
+            }
+            Directory dir = new Directory(name, path, exts);
             app.addDirectory(dir);
         }
     }

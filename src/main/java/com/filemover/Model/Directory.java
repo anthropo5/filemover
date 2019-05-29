@@ -1,5 +1,6 @@
 package com.filemover.Model;
 
+import com.filemover.Utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,14 +12,16 @@ import static com.filemover.Model.Constants.*;
 
 /*
     TODO
-        check create folder - testfolder2 is empty - why?
+        - check create folder - testfolder2 is empty - why?
+        - store extensions in Set? pros - zero duplicates; cons - order?
+        - based on path to folder we can retrive file name and root path. currently path == root path
  */
 
 public class Directory {
     private static final Logger log = LoggerFactory.getLogger(Directory.class);
 
     private String name;
-    private Path path;
+    private Path path; // root folder
     private List<String> extensions;
 
     public Directory(String name, String path, List<String> extensions) {
@@ -43,17 +46,31 @@ public class Directory {
         return extensions;
     }
 
-    public Path getPath() {
+    public Path getParent() {
         return this.path;
     }
 
+    public Path getPath() {
+        return Paths.get(getParent().toString() + FileSystems.getDefault().getSeparator() + getName());
+    }
     public void addExtension(String ext) {
+        ext = StringUtils.pepare(ext);
         if (extensions.contains(ext)) {
             log.debug("Ext already added");
             return;
         }
         extensions.add(ext);
         log.debug("Adding ext: " + ext + " to: " + this.getName());
+    }
+
+    public void addExtensions(String extensions) {
+        extensions = StringUtils.pepare(extensions);
+//        extensions = StringUtils.removeSpecialChars(extensions);
+        String[] exts = extensions.split("\\s");
+        for (String ext :
+                exts) {
+            addExtension(ext.trim());
+        }
     }
 
     public boolean removeExtension(String ext) {
@@ -75,25 +92,40 @@ public class Directory {
         return false;
     }
 
+    public void removeExtensions(String extensions) {
+        extensions = StringUtils.pepare(extensions);
+        String[] exts = extensions.split(" ");
+        for (String ext :
+                exts) {
+            removeExtension(ext.trim());
+        }
+    }
+
 
     public void createFolder() {
         try {
-
+            // if path exists should be checked i constructor? if null creates record in yaml file?
+            Path path = Paths.get(this.path.toString() + FileSystems.getDefault().getSeparator() + this.name);
+            log.debug("Path to folder: " + path.toString());
             if (!Files.exists(this.path)) {
                 throw new FileNotFoundException("Directory \"" + this.name + "\" do not exists. Check path in config.yml file");
+            } else if (Files.isRegularFile(path)) {
+                throw new NotDirectoryException(this.name + " already exists and is not a directory");
+            } else if (Files.isDirectory(path)) {
+                throw new FileAlreadyExistsException("Directory " + this.name +
+                                                    " already exists. Files from main folder will be copied to it");
             }
-            if (Files.isDirectory(this.path)) {
-                log.debug("Directory " + this.name + " already exists");
-                return;
-//                throw new FileAlreadyExistsException("Directory \"" + this.name + "\" already exists");
-            }
-            Path path = Paths.get(this.path.toString() + FileSystems.getDefault().getSeparator() + this.name);
             Files.createDirectory(path);
             log.info("Directory created: " + this.name);
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
+            log.debug(e.getMessage());
+        } catch (NotDirectoryException e) {
+            log.debug(e.getMessage());
+        } catch (FileAlreadyExistsException e) {
+            log.debug(e.getMessage());
         } catch (IOException e) {
-            log.error("Cant create directory " + e.getMessage());
+            log.error("IO Exception" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -103,7 +135,7 @@ public class Directory {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Directory directory = (Directory) o;
-        return path.equals(directory.path);
+        return path.equals(directory.path) && name.equals(directory.name);
     }
 
     @Override

@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.DirectoryIteratorException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,13 +34,11 @@ public class Application {
     }
 
     private void init() {
-//        cfg.read();
-//        cfg.loadYAMLFile();
-//        cfg.load();
-//        createAllFolders();
-//        addExtensionsToMap();
-//        initNameToDirMap();
-//        loadFilesFromMainFolder();
+        cfg.loadYAMLFile();
+        createAllFolders();
+        addExtensionsToMap();
+        initNameToDirMap();
+        loadFilesFromMainFolder();
 
 //        System.out.println(directories);
 
@@ -51,6 +46,11 @@ public class Application {
 
     public void run() {
         init();
+
+//        moveFiles(true);
+
+//        Directory dir = new Directory("ext", null, Arrays.asList("ext1", "ext2", "ext3"));
+//        dir.createFolder();
 
 //        cfg.makeYAML();
     }
@@ -132,7 +132,7 @@ public class Application {
             for (String ext :
                     dir.getExtensions()) {
                 extensionsToFolderPath.put(ext, dir.getPath());
-//                log.debug(ext + " ext is related with " + dir.getPath().getFileName());
+                log.debug(ext + " ext is related with " + dir.getName());
             }
         }
     }
@@ -189,18 +189,13 @@ public class Application {
         return this.filesInfo.size();
     }
 
-//    public void makeAndSaveConfig() {
-//        cfg.make();
-//        cfg.save();
-//    }
+
 
 
 
     public Directory getDirectoryByName(String name) {
         return nameToDir.get(name);
     }
-
-
 
     public boolean addDirectory(String name) {
         Directory dir = new Directory(name);
@@ -282,7 +277,7 @@ public class Application {
 
     public void showExtensionsToPath() {
         for (String ext : extensionsToFolderPath.keySet()) {
-            System.out.println("ext: " + ext + " folder: " + extensionsToFolderPath.get(ext));
+            System.out.println("ext: " + ext + " \nfolder: " + extensionsToFolderPath.get(ext));
         }
     }
 }
