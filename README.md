@@ -1,3 +1,5 @@
+Scroll to bottom to find out what I use in this project.
+
 # filemover
 Application moves files from main-folder to sub-folder depending on file extension.
 You have to define main-folder, sub-folders and extensions in "config.yml".
@@ -29,9 +31,9 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 
 
 ### In future
-- [ ] Create optional default folder - all files with not recognized extensions would be moved to "default" folder
-- [ ] Optional flag if directories should be moved to default folder
-- [ ] User can specify which extensions wouldn't be copied to "default" folder
+- [ ] Add more tests with JUnit
+- [ ] Create basic CLi with Apache Common CLI
+- [ ] Use constructor from sneakyaml
 
 ### In far future
 - [ ] Add MainFolder class -> allows user to manage few folders
@@ -39,7 +41,9 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 - [ ] Maybe move big files in new thread - what - observable pattern to progress bar? user input would be blocked anyway.
 - [ ] Progress bar to each file
 - [ ] Spearate View and Contoller - currently View = Controller + View
-- [ ] Add some tests with JUnit
+- [ ] Create optional default folder - all files with not recognized extensions would be moved to "default" folder
+- [ ] Optional flag if directories should be moved to default folder
+- [ ] User can specify which extensions wouldn't be copied to "default" folder
 
 ### Completed
 - [X] Use project manager - maven (or gradle in future)
@@ -47,10 +51,13 @@ Contains empty files with diffrent extensions. Allows you to test aplication. Re
 - [X] Change simple Logger to Logback
 - [X] CRUD operations on directories
 - [X] Specify destination folder path for extension e.g. in config.txt: `F:\From\main_folder\to\diffrent\location: jpg`
+- [X] Add some tests with JUnit 4 (Directory.class)
 
 ## I use in the project
 - git
 - Maven
 - Logback
 - Sneakyaml
+- JUnit 4
+- Apache Common CLI
 
