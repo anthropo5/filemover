@@ -14,8 +14,11 @@ import java.util.stream.Stream;
 
 public class Application {
 
-    // TODO
-    //  sprawdzać czy rozszerzenie jest dodane do jakiegokolwiek folderu
+    /*
+    TODO
+        test logic
+
+     */
 
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
@@ -35,12 +38,12 @@ public class Application {
 
     private void init() {
 //        cfg.read();
-        cfg.loadYAMLFile();
+//        cfg.loadYAMLFile();
 //        cfg.load();
-        createAllFolders();
-        addExtensionsToMap();
-        initNameToDirMap();
-        loadFilesFromMainFolder();
+//        createAllFolders();
+//        addExtensionsToMap();
+//        initNameToDirMap();
+//        loadFilesFromMainFolder();
 
 //        System.out.println(directories);
 
@@ -49,7 +52,7 @@ public class Application {
     public void run() {
         init();
 
-        cfg.makeYAML();
+//        cfg.makeYAML();
     }
 
 
@@ -200,20 +203,19 @@ public class Application {
 
 
     public boolean addDirectory(String name) {
-        log.debug("Adding directory " + name);
-        Directory toAdd = new Directory(name);
-        if(!directories.contains(toAdd)) {
-            this.directories.add(toAdd);
-            this.nameToDir.put(name, toAdd);
-            log.debug("     Directory added" );
-            return true;
-        }
-        log.debug("     Directory already exists");
-        return false;
+        Directory dir = new Directory(name);
+        return addDirectory(dir);
     }
 
-    public void addDirectory(Directory dir) {
+    public boolean addDirectory(Directory dir) {
+        if (directories.contains(dir)) {
+            log.debug("Directory " + dir.getName() + " already exists");
+            return false;
+        }
         this.directories.add(dir);
+        this.nameToDir.put(dir.getName(), dir);
+        log.debug("Directory " + dir.getName() + " added");
+        return true;
     }
 
     public boolean deleteDirectory(Directory dir) {
