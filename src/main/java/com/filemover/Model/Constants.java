@@ -12,4 +12,7 @@ public final class Constants {
     public static final String PATH_CONFIG_YML = "/home/kusy/git/filemover/config.yml";
     public static final String PATH_CONFIG_TXT = "/home/kusy/git/filemover/config.txt";
 
+    public static final String CONFIG_FILE_NAME = "config.yml";
+    public static final String GITHUB_PROJECT_LINK = " link to github";
+
 }

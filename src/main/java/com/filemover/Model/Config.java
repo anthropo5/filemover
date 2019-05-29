@@ -12,32 +12,41 @@ import java.util.*;
 import static com.filemover.Model.Constants.*;
 
 public class Config {
-
-    // TODO
-    //  check if path to config.yml is ok when running program from jar
-    //  use constructor in sneakyaml
-    //  final pathToMainFolder? static initialization?
-
+    /*
+     TODO
+      check if path to config.yml is ok when running program from jar
+      use constructor in sneakyaml
+      final pathToMainFolder? static initialization?
+    */
 
     private static final Logger log = LoggerFactory.getLogger(Config.class);
-
-    private final String CONFIG_FILE_NAME = "config.yml";
-    private final String GITHUB_PROJECT_LINK = " link to github";
-
     private static Path pathToMainFolder;
-
     private Application app;
 
     public Config(Application app) {
         this.app = app;
     }
 
+    public static Path getPathToMainFolder() {
+        return Config.pathToMainFolder;
+    }
+
     public void setPathToMainFolder(String path) {
         log.debug("Setting path of main folder to: " + path);
         Config.pathToMainFolder = Paths.get(path);
     }
-    public static Path getPathToMainFolder() {
-        return Config.pathToMainFolder;
+
+    public void loadDirectories(List<Object> directories) {
+        for (Object obj :
+                directories) {
+            Map<String, Object> props = (Map<String, Object>) obj;
+            String name = (String) props.get(PROP_NAME);
+            String path = (String) props.get(PROP_PATH);
+            List<String> extensions = (List<String>) props.get(PROP_EXTENSIONS);
+
+            Directory dir = new Directory(name, path, extensions);
+            app.addDirectory(dir);
+        }
     }
 
     public void loadYAMLFile() {
@@ -73,22 +82,6 @@ public class Config {
         }
     }
 
-
-    public void loadDirectories(List<Object> directories) {
-        for (Object obj :
-                directories) {
-            Map<String, Object> props = (Map<String, Object>) obj;
-            String name = (String) props.get(PROP_NAME);
-            String path = (String) props.get(PROP_PATH);
-            List<String> extensions = (List<String>) props.get(PROP_EXTENSIONS);
-
-            Directory dir = new Directory(name, path, extensions);
-            app.addDirectory(dir);
-        }
-    }
-
-
-
     public void makeYAML() {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put(PROP_MAIN_FOLDER, Config.getPathToMainFolder().toString());
@@ -112,5 +105,4 @@ public class Config {
         }
 
     }
-
 }
