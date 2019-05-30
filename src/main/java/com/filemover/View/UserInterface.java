@@ -4,17 +4,181 @@ import com.filemover.Model.Application;
 import com.filemover.Model.Config;
 import com.filemover.Model.Directory;
 import com.filemover.Model.SortingOption;
+import org.apache.commons.cli.*;
 
 import java.util.Scanner;
 
 public class UserInterface {
     private Application app;
     private Scanner reader;
+    private CommandLineParser parser;
+    private CommandLine cmd;
+
+    private final String CMD_REMOVE = "remove";
+    private final String CMD_ADD = "add";
+    private final String CMD_HELP = "help";
+    private final String[] CMD_QUIT = {"quit", "q", "exit"};
+    private final String CMD_MOVE = "move";
+
+    // move -fs --main - form sub folders - turn of checking apache cli tutorial
+    // move // to sub by default
+    // move -h
 
     public UserInterface(Application app) {
         this.app = app;
         this.reader = new Scanner(System.in);
+        this.parser = new DefaultParser();
     }
+
+    public Options createOptionsRemove() {
+        Options options = new Options();
+
+        options.addOption(Option.builder("f")
+                .longOpt("folder")
+                .desc("remove directory")
+                .hasArgs()
+                .argName("folder1> <folder2> ... <folderN")
+                .build());
+
+        options.addOption(Option.builder("e")
+                .longOpt("exts")
+                .desc("remove extensions")
+                .hasArgs()
+                .argName("folder1> <ext1> ... <extN")
+                .build());
+
+
+        options.addOption(Option.builder("h")
+                .longOpt("help")
+                .hasArg(false)
+                .desc("show help")
+                .build());
+
+        return options;
+    }
+
+    public Options createOptionsAdd() {
+        Options options = new Options();
+
+        options.addOption(Option.builder("f")
+                .longOpt("folder")
+                .desc("add directory")
+                .hasArgs()
+                .argName("folder> <ext1> ... <extN")
+                .build());
+
+        options.addOption(Option.builder("e")
+                .longOpt("exts")
+                .desc("add extensions")
+                .hasArgs()
+                .argName("folder> <ext2> ... <extN")
+                .build());
+
+
+        options.addOption(Option.builder("h")
+                .longOpt("help")
+                .hasArg(false)
+                .desc("show help")
+                .build());
+
+        return options;
+    }
+
+    public void runCLI() {
+        Options options;
+        HelpFormatter formatter = new HelpFormatter();
+
+        boolean exit = false;
+        while (!exit) {
+            System.out.print("> ");
+            String[] args = reader.nextLine().split("\\s");
+
+            try {
+                String command = args[0];
+
+                switch (command) {
+                    case CMD_REMOVE: {
+                        options = createOptionsRemove();
+                        cmd = parser.parse(options, args);
+                        if (cmd.hasOption("f")) {
+                            // remove folders
+                            String[] values = cmd.getOptionValues("f");
+                            for (int i = 0; i < values.length; i++) {
+                                System.out.println(values[i]);
+                            }
+                        } else if (cmd.hasOption("e")) {
+                            // remove exts
+                            String[] values = cmd.getOptionValues("f");
+                            for (int i = 0; i < values.length; i++) {
+                                System.out.println(values[i]);
+                            }
+                        } else if (cmd.hasOption("h")) {
+                            formatter.printHelp("remove", options);
+                        } else {
+                            formatter.printHelp("remove", options);
+                        }
+                        break;
+                    }
+                    case CMD_ADD: {
+                        options = createOptionsAdd();
+                        cmd = parser.parse(options, args);
+                        if (cmd.hasOption("f")) {
+                            // remove folders
+                            String[] values = cmd.getOptionValues("f");
+                            for (int i = 0; i < values.length; i++) {
+                                System.out.println(values[i]);
+                            }
+                        } else if (cmd.hasOption("e")) {
+                            // remove exts
+                            String[] values = cmd.getOptionValues("f");
+                            for (int i = 0; i < values.length; i++) {
+                                System.out.println(values[i]);
+                            }
+                        } else if (cmd.hasOption("h")) {
+                            formatter.printHelp("add", options);
+                        } else {
+                            formatter.printHelp("add", options);
+                        }
+                        break;
+                    }
+                    case CMD_HELP: {
+                        System.out.println("Allowed commands: ");
+                        options = createOptionsRemove();
+                        formatter.printHelp("remove", options);
+                        System.out.println("example: remove -f images videos");
+                        options = createOptionsAdd();
+                        formatter.printHelp("add", options);
+
+//                        System.out.println("Allowed commands: "
+//                                            + "\n   remove - removing folders/exts"
+//                                            + "\n   add    - adding folders/exts"
+//                                            + "\n   move   - moves files to/from main/sub folder"
+//                                            + "\nType 'command --help' to get information about usage"
+//                                            );
+                        break;
+
+
+                    }
+                    case "quit":
+                    case "q":
+                        exit = true;
+                        System.out.println("quit");
+                        break;
+
+                    default:
+                        System.out.println("Invalid command. Type 'help' to see proper syntax");
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
+
+
+    }
+
 
     public void run() {
         app.run();
