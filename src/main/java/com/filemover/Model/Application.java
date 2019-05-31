@@ -22,13 +22,13 @@ public class Application {
     private Config cfg;
     private List<Directory> directories;
     private List<FileInfo> filesInfo;
-    private Map<String, Path> extensionsToFolderPath;
+    private Map<String, Path> extensionToFolderPath;
     private Map<String, Directory> nameToDir;
 
     public Application() {
         this.directories = new ArrayList<>();
         this.filesInfo = new ArrayList<>();
-        this.extensionsToFolderPath = new HashMap<>();
+        this.extensionToFolderPath = new HashMap<>();
         this.nameToDir = new HashMap<>();
         this.cfg = new Config(this);
     }
@@ -40,23 +40,16 @@ public class Application {
     private void init() {
         cfg.load();
         createAllFolders();
-        addExtensionsToMap();
-        initNameToDirMap();
+//        addExtensionsToMap();
+//        initNameToDirMap();
         loadFilesFromMainFolder();
-
-//        System.out.println(directories);
-
     }
 
     public void run() {
         init();
 
-//        moveFiles(true);
 
-//        Directory dir = new Directory("ext", null, Arrays.asList("ext1", "ext2", "ext3"));
-//        dir.createFolder();
 
-//        cfg.makeYAML();
     }
 
 
@@ -79,8 +72,8 @@ public class Application {
             sb.append(i++).append("/").append(size).append(" ");
 
             if (toSubFolders) {
-                dst = extensionsToFolderPath.get(file.getExtension());
-//                System.out.println("map ext to str " + extensionsToFolderPath.toString());
+                dst = extensionToFolderPath.get(file.getExtension());
+//                System.out.println("map ext to str " + extensionToFolderPath.toString());
                 if (dst == null) {
                     sb.append("Files has not defined extension: ").append(file.getExtension())
                                 .append(" file name: ").append(file.getPath().getFileName());
@@ -130,26 +123,30 @@ public class Application {
             directory.createFolder();
         }
 
-        addExtensionsToMap();
+//        addExtensionsToMap();
     }
 
-    private void addExtensionsToMap() {
+    private void mapExtensionsToPath() {
         for (Directory dir :
                 directories) {
-            for (String ext :
-                    dir.getExtensions()) {
-                extensionsToFolderPath.put(ext, dir.getPath());
-                log.debug(ext + " ext is related with " + dir.getName());
-            }
+            mapExtensionsToPath(dir);
         }
     }
 
-    private void initNameToDirMap() {
-        for (Directory dir :
-                directories) {
-            this.nameToDir.put(dir.getName(), dir);
+    public void mapExtensionsToPath(Directory dir) {
+        for (String ext :
+                dir.getExtensions()) {
+            extensionToFolderPath.put(ext, dir.getPath());
+            log.debug(ext + " ext is related with " + dir.getName());
         }
     }
+
+//    private void initNameToDirMap() {
+//        for (Directory dir :
+//                directories) {
+//            this.nameToDir.put(dir.getName(), dir);
+//        }
+//    }
 
     private int loadFilesFromAllFolders() {
         log.debug("FilesInfo is cleared ");
@@ -201,8 +198,15 @@ public class Application {
 
 
     public Directory getDirectoryByName(String name) {
-        return nameToDir.get(name);
+        Directory dir = nameToDir.get(name);
+        if (dir == null) {
+            log.debug("Couldn't get folder " + name + ". Null returned");
+        }
+        return dir;
     }
+
+
+    // CLI API
 
     public boolean addDirectory(String name) {
         Directory dir = new Directory(name);
@@ -210,38 +214,92 @@ public class Application {
     }
 
     public boolean addDirectory(Directory dir) {
-        if (directories.contains(dir)) {
+//        if (directories.contains(dir)) {
+        if (nameToDir.get(dir.getName()) != null) {
             log.debug("Directory " + dir.getName() + " already exists");
             return false;
         }
         this.directories.add(dir);
         this.nameToDir.put(dir.getName(), dir);
+        mapExtensionsToPath(dir);
         log.debug("Directory " + dir.getName() + " added");
         return true;
     }
 
-    public boolean deleteDirectory(Directory dir) {
+    public boolean removeDirectory(String name) {
+        Directory dir = getDirectoryByName(name);
+        return removeDirectory(dir);
+    }
+
+    public boolean removeDirectory(Directory dir) {
 //        Directory toDelete = new Directory(name);
         log.debug("Deleting directory: " + dir.getName());
-        if (directories.contains(dir)) {
-            Iterator<Directory> it = directories.iterator();
-            while (it.hasNext()) {
-                Directory toDelete = it.next();
-                if (dir.equals(toDelete)) {
-                    it.remove();
-                    log.debug("     dir deleted");
-                    return true;
-                }
-            }
+
+        if(directories.remove(dir)) {
+            log.debug("Directory " + dir.getName() + " deleted.");
+            return true;
         }
-        log.debug("     not in a list");
+
+        log.debug("Directory " + dir.getName() + " NOT removed. Doesn't exist");
         return false;
+
+//        if (directories.contains(dir)) {
+//            Iterator<Directory> it = directories.iterator();
+//            while (it.hasNext()) {
+//                Directory toDelete = it.next();
+//                if (dir.equals(toDelete)) {
+//                    it.remove();
+//                    log.debug("     dir deleted");
+//                    return true;
+//                }
+//            }
+//        }
+//        log.debug("     not in a list");
+//        return false;
     }
+
+    public void removeDirectories(List<String> dirs) {
+        for (String dir :
+                dirs) {
+            removeDirectory(dir);
+        }
+    }
+
 
     public List<Directory> getDirectories() {
         return this.directories;
     }
 
+
+    public boolean removeExtensionsFromDirectory(List<String> args) {
+        String name = args.get(0);
+        if(!addDirectory(name)) {
+            return false;
+        }
+        args.remove(0);
+        getDirectoryByName(name).removeExtensions(args);
+        return true;
+    }
+
+    public boolean addDirectoryWithExts(List<String> args) {
+        String name = args.get(0);
+        if(!addDirectory(name)) {
+            return false;
+        }
+        args.remove(0);
+        getDirectoryByName(name).addExtensions(args);
+        return true;
+    }
+
+    public boolean addExtensionsToFolder(List<String> args) {
+        Directory dir = getDirectoryByName(args.get(0));
+        if (dir == null) {
+            return false;
+        }
+        args.remove(0);
+        dir.addExtensions(args);
+        return true;
+    }
 
 
     public void sortFilesBy(SortingOption sortingOption) {
@@ -283,8 +341,8 @@ public class Application {
     }
 
     public void showExtensionsToPath() {
-        for (String ext : extensionsToFolderPath.keySet()) {
-            System.out.println("ext: " + ext + " \nfolder: " + extensionsToFolderPath.get(ext));
+        for (String ext : extensionToFolderPath.keySet()) {
+            System.out.println("ext: " + ext + " \nfolder: " + extensionToFolderPath.get(ext));
         }
     }
 }

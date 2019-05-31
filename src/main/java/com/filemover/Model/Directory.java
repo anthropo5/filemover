@@ -64,6 +64,12 @@ public class Directory {
         log.debug("Adding ext: " + ext + " to: " + this.getName());
     }
 
+    public void addExtensions(List<String> extensions) {
+        for (String ext :
+                extensions) {
+            addExtension(ext);
+        }
+    }
     public void addExtensions(String extensions) {
         extensions = StringUtils.pepare(extensions);
 //        extensions = StringUtils.removeSpecialChars(extensions);
@@ -99,6 +105,13 @@ public class Directory {
         for (String ext :
                 exts) {
             removeExtension(ext.trim());
+        }
+    }
+
+    public void removeExtensions(List<String> extensions) {
+        for (String ext :
+                extensions) {
+            removeExtension(ext);
         }
     }
 
@@ -172,5 +185,6 @@ public class Directory {
         dir.put(PROP_EXTENSIONS, this.extensions);
         return dir;
     }
+
 
 }
