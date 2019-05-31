@@ -36,7 +36,7 @@ public class DirectoryTest {
     public void init() {
         app = new Application();
         cfg = new Config(app);
-        cfg.loadYAMLFile();
+        cfg.load();
     }
 
     @Test

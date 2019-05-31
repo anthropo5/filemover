@@ -11,7 +11,7 @@ main folder: /home/kusy/git/filemover/_testfolder
 
 directories:
   - name: doc
-    path: '/home/kusy/git/filemover/_testfolder2'
+    #path: '/home/kusy/git/filemover/_testfolder2'
     extensions: txt pdf xlsx pptx doc docx
 
   - name: img

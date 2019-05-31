@@ -13,13 +13,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class UserInterface {
+public class CLI {
     private Application app;
     private Scanner reader;
     private CommandLineParser parser;
     private CommandLine cmd;
     private Options options;
     private HelpFormatter formatter;
+    private StringWriter out = new StringWriter();
+    private PrintWriter pw = new PrintWriter(out);
+
+    private final int LEFT_PAD = 1;
+    private final int DESC_PAD = 3;
+    private final int WIDTH = 80;
 
 
     // diffrent name, because it is removing folder only from program memory and the you have to save config
@@ -31,16 +37,162 @@ public class UserInterface {
     private final String CMD_MOVE = "move";
     private final List<String> CMD_QUIT = new ArrayList<>(Arrays.asList("quit", "q", "exit"));
 
+    private final String HEADER_CONFIG = "Config is loaded form file when program is started.\n" +
+            "If you made change in config file while program is running, you have to load config again.\n" +
+            "Changes in config made in application are not saved automatically.\n" +
+            "You have to save them or run 'quit' with proper flag: 'quit --save'";
+    private final String HEADER_QUIT = "Type 'quit', 'q', 'exit' to exit program.";
+
     // move -fs --main - form sub folders - turn of checking apache cli tutorial
     // move // to sub by default
     // move -h
 
-    public UserInterface(Application app) {
+    public CLI(Application app) {
         this.app = app;
         this.reader = new Scanner(System.in);
         this.parser = new DefaultParser();
         this.options = new Options();
         this.formatter = new HelpFormatter();
+    }
+
+//    public boolean execute(String input) {
+//
+//    }
+
+    public boolean execute(String input) throws ParseException {
+        String[] args = input.split("\\s");
+        String command = args[0];
+        if (command.equals(CMD_MOVE)) {
+            options = createOptionsMove();
+            cmd = parser.parse(options, args);
+            if (cmd.hasOption("f")) {
+                app.moveFilesToSubFolders();
+            } else if (cmd.hasOption("m")) {
+                app.moveAllFilesToMainFolder();
+            } else if (cmd.hasOption("h")) {
+//                        formatter.printHelp(CMD_CONFIG, HEADER_CONFIG, createOptionsMove(), "");
+                printHelpMove();
+            } else {
+                printInvalidCommand(CMD_CONFIG);
+            }
+
+        } else if (command.equals(CMD_ADD)) {
+            options = createOptionsAdd();
+            cmd = parser.parse(options, args);
+            if (cmd.hasOption("f")) {
+                // add folders
+                String[] values = cmd.getOptionValues("f");
+                for (int i = 0; i < values.length; i++) {
+                    System.out.println(values[i]);
+                }
+            } else if (cmd.hasOption("e")) {
+                // add exts
+                String[] values = cmd.getOptionValues("f");
+                for (int i = 0; i < values.length; i++) {
+                    System.out.println(values[i]);
+                }
+            } else if (cmd.hasOption("h")) {
+                formatter.printHelp("add", options);
+            } else {
+                System.out.println("Invalid command. Type 'add --help'");
+            }
+        } else if (command.equals(CMD_REMOVE)) {
+            options = createOptionsRemove();
+            cmd = parser.parse(options, args);
+            if (cmd.hasOption("f")) {
+                // remove folders
+                String[] values = cmd.getOptionValues("f");
+                for (int i = 0; i < values.length; i++) {
+                    System.out.println(values[i]);
+                }
+            } else if (cmd.hasOption("e")) {
+                // remove exts
+                String[] values = cmd.getOptionValues("f");
+                for (int i = 0; i < values.length; i++) {
+                    System.out.println(values[i]);
+                }
+            } else if (cmd.hasOption("h")) {
+                formatter.printHelp("remove", options);
+            } else {
+                formatter.printHelp("remove", options);
+            }
+        } else if (command.equals(CMD_CONFIG)) {
+
+            // f m h
+        } else if (command.equals(CMD_SHOW)) {
+//                } else if (command.equals(CMD_REMOVE)) {
+//                } else if (command.equals(CMD_REMOVE)) {
+//                } else if (command.equals(CMD_REMOVE)) {
+//                } else if (command.equals(CMD_REMOVE)) {
+
+        } else if (command.equals(CMD_HELP)) {
+            System.out.println(createHelpAll());
+        } else if (CMD_QUIT.contains(command)) {
+//                exit = true;
+            System.out.println("quit");
+            return true;
+        } else {
+            System.out.println("Invalid input. Type 'help' to show all commands ");
+        }
+        return false;
+    }
+
+    public void runCLI() {
+        try {
+            execute("help");
+            System.out.println("-------------------------------------------------");
+            execute("help");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        System.out.println("Type 'help' to show all commands");
+//        HelpFormatter formatter = new HelpFormatter();
+//        boolean exit = false;
+//        while (!exit) {
+//            System.out.print("> ");
+//            String fakeInput = "help";
+//            reader = new Scanner(fakeInput);
+//            String input = reader.nextLine();
+////            String[] args = reader.nextLine().split("\\s");
+//            exit = true;
+//            try {
+//                execute(input);
+////
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
+    }
+
+    public void printHelpConfig() {
+        formatter.printHelp(CMD_CONFIG, HEADER_CONFIG, createOptionsConfig(), "");
+    }
+
+    public void printHelpMove() {
+        formatter.printHelp(CMD_MOVE, HEADER_CONFIG, createOptionsMove(), "");
+    }
+
+    public Options createOptionsMove() {
+        Options options = new Options();
+
+        options.addOption(Option.builder("f")
+                .longOpt("files")
+                .desc("move files from main-folder to sub-folders")
+                .hasArg(false)
+                .build());
+
+        options.addOption(Option.builder("m")
+                .longOpt("main")
+                .desc("move files form sub-folder to main-folder")
+                .build());
+
+        options.addOption(Option.builder("h")
+                .longOpt("help")
+                .hasArg(false)
+                .desc("show help")
+                .build());
+
+        return options;
     }
 
     public Options createOptionsRemove() {
@@ -119,28 +271,8 @@ public class UserInterface {
 
         return options;
     }
-    public Options createOptionsMove() {
-        Options options = new Options();
 
-        options.addOption(Option.builder("f")
-                .longOpt("files")
-                .desc("move files from main-folder to sub-folders")
-                .hasArg(false)
-                .build());
 
-        options.addOption(Option.builder("m")
-                .longOpt("main")
-                .desc("move files form sub-folder to main-folder")
-                .build());
-
-        options.addOption(Option.builder("h")
-                .longOpt("help")
-                .hasArg(false)
-                .desc("show help")
-                .build());
-
-        return options;
-    }
     public Options createOptionsShow() {
         Options options = new Options();
 
@@ -183,6 +315,7 @@ public class UserInterface {
 
         return options;
     }
+
     public Options createOptionsQuit() {
         Options options = new Options();
 
@@ -201,205 +334,111 @@ public class UserInterface {
         return options;
     }
 
-    public String createHelpMenu() {
-        final int LEFT_PAD = 1;
-        final int DESC_PAD = 3;
-        final int WIDTH = 80;
-
-        StringWriter out = new StringWriter();
-        PrintWriter pw = new PrintWriter(out);
+    public String createHelpMove() {
+        out.getBuffer().setLength(0);
 
         formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, "move", ""
+        formatter.printHelp(pw, WIDTH, CMD_MOVE, ""
                 , createOptionsMove(), LEFT_PAD, DESC_PAD, "");
 
+        pw.flush();
+        out.flush();
+
+        return out.toString();
+    }
+    public String createHelpAdd() {
+        out.getBuffer().setLength(0);
+
         formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, "add", ""
+        formatter.printHelp(pw, WIDTH, CMD_ADD, ""
                 , createOptionsAdd(), LEFT_PAD, DESC_PAD, "");
 
-        formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, "remove", ""
-                , createOptionsRemove(), LEFT_PAD, DESC_PAD, "");
 
-        formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, "show", ""
-                , createOptionsShow(), LEFT_PAD, DESC_PAD, "");
-
-        formatter.printWrapped(pw, WIDTH, "");
-        final String HEADER_CONFIG = "Config is loaded form file when program is started.\n" +
-                "If you made change in config file while program is running, you have to load config again.\n" +
-                "Changes in config made in application are not saved automatically.\n" +
-                "You have to save them or run 'quit' with proper flag: 'quit --save'";
-        formatter.printHelp(pw, WIDTH, "config", HEADER_CONFIG
-                , createOptionsQuit(), LEFT_PAD, DESC_PAD, "");
-
-        formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, "quit", "Type 'quit' to exit program. \nAliases: 'q', 'exit'"
-                , createOptionsQuit(), LEFT_PAD, DESC_PAD, "");
-
-        formatter.printWrapped(pw, WIDTH, "\nType 'help' to show all commands");
         pw.flush();
+        out.flush();
 
         return out.toString();
     }
 
-    public void runCLI() {
-        System.out.println("Type 'help' to show all commands");
-        HelpFormatter formatter = new HelpFormatter();
-        boolean exit = false;
-        while (!exit) {
-            System.out.print("> ");
-            String input = "help";
-            reader = new Scanner(input);
-            String[] args = reader.nextLine().split("\\s");
-            exit = true;
-            try {
-                String command = args[0];
+    public String createHelpRemove() {
+        out.getBuffer().setLength(0);
 
-                if (command.equals(CMD_ADD)) {
-                    options = createOptionsAdd();
-                    cmd = parser.parse(options, args);
-                    if (cmd.hasOption("f")) {
-                        // add folders
-                        String[] values = cmd.getOptionValues("f");
-                        for (int i = 0; i < values.length; i++) {
-                            System.out.println(values[i]);
-                        }
-                    } else if (cmd.hasOption("e")) {
-                        // add exts
-                        String[] values = cmd.getOptionValues("f");
-                        for (int i = 0; i < values.length; i++) {
-                            System.out.println(values[i]);
-                        }
-                    } else if (cmd.hasOption("h")) {
-                        formatter.printHelp("add", options);
-                    } else {
-                        System.out.println("Invalid command. Type 'add --help'");
-                    }
-                    continue;
-                } else if (command.equals(CMD_REMOVE)) {
-                    options = createOptionsRemove();
-                    cmd = parser.parse(options, args);
-                    if (cmd.hasOption("f")) {
-                        // remove folders
-                        String[] values = cmd.getOptionValues("f");
-                        for (int i = 0; i < values.length; i++) {
-                            System.out.println(values[i]);
-                        }
-                    } else if (cmd.hasOption("e")) {
-                        // remove exts
-                        String[] values = cmd.getOptionValues("f");
-                        for (int i = 0; i < values.length; i++) {
-                            System.out.println(values[i]);
-                        }
-                    } else if (cmd.hasOption("h")) {
-                        formatter.printHelp("remove", options);
-                    } else {
-                        formatter.printHelp("remove", options);
-                    }
-                    continue;
-                } else if (command.equals(CMD_CONFIG)) {
+        formatter.printWrapped(pw, WIDTH, "");
+        formatter.printHelp(pw, WIDTH, CMD_REMOVE, ""
+                , createOptionsRemove(), LEFT_PAD, DESC_PAD, "");
 
-                } else if (command.equals(CMD_MOVE)) {
-                    // f m h
-                } else if (command.equals(CMD_SHOW)) {
-//                } else if (command.equals(CMD_REMOVE)) {
-//                } else if (command.equals(CMD_REMOVE)) {
-//                } else if (command.equals(CMD_REMOVE)) {
-//                } else if (command.equals(CMD_REMOVE)) {
+        pw.flush();
+        out.flush();
 
-                } else if (command.equals(CMD_HELP)) {
-                    System.out.println(createHelpMenu());
-                } else if (CMD_QUIT.contains(command)) {
-                    exit = true;
-                    System.out.println("quit");
-                } else {
-                    System.out.println("Invalid input. Type 'help' to show all commands ");
-                }
+        return out.toString();
+    }
+    public String createHelpShow() {
+        out.getBuffer().setLength(0);
 
-/*
-                    switch (command) {
-                    case CMD_REMOVE: {
-                        options = createOptionsRemove();
-                        cmd = parser.parse(options, args);
-                        if (cmd.hasOption("f")) {
-                            // remove folders
-                            String[] values = cmd.getOptionValues("f");
-                            for (int i = 0; i < values.length; i++) {
-                                System.out.println(values[i]);
-                            }
-                        } else if (cmd.hasOption("e")) {
-                            // remove exts
-                            String[] values = cmd.getOptionValues("f");
-                            for (int i = 0; i < values.length; i++) {
-                                System.out.println(values[i]);
-                            }
-                        } else if (cmd.hasOption("h")) {
-                            formatter.printHelp("remove", options);
-                        } else {
-                            formatter.printHelp("remove", options);
-                        }
-                        break;
-                    }
-                    case CMD_ADD: {
-                        options = createOptionsAdd();
-                        cmd = parser.parse(options, args);
-                        if (cmd.hasOption("f")) {
-                            // remove folders
-                            String[] values = cmd.getOptionValues("f");
-                            for (int i = 0; i < values.length; i++) {
-                                System.out.println(values[i]);
-                            }
-                        } else if (cmd.hasOption("e")) {
-                            // remove exts
-                            String[] values = cmd.getOptionValues("f");
-                            for (int i = 0; i < values.length; i++) {
-                                System.out.println(values[i]);
-                            }
-                        } else if (cmd.hasOption("h")) {
-                            formatter.printHelp("add", options);
-                        } else {
-                            formatter.printHelp("add", options);
-                        }
-                        break;
-                    }
-                    case CMD_HELP: {
-//                        System.out.println("Allowed commands: ");
-//                        options = createOptionsRemove();
-//                        formatter.printHelp("remove", options);
-//                        System.out.println("example: remove -f images videos");
-//                        options = createOptionsAdd();
-//                        formatter.printHelp("add", options);
+        formatter.printWrapped(pw, WIDTH, "");
+        formatter.printHelp(pw, WIDTH, CMD_SHOW, ""
+                , createOptionsShow(), LEFT_PAD, DESC_PAD, "");
 
-                        System.out.println(createHelpMenu());
+        pw.flush();
+        out.flush();
 
-//                        System.out.println("Allowed commands: "
-//                                            + "\n   remove - removing folders/exts"
-//                                            + "\n   add    - adding folders/exts"
-//                                            + "\n   move   - moves files to/from main/sub folder"
-//                                            + "\nType 'command --help' to get information about usage"
-//                                            );
-                        break;
+        return out.toString();
+    }
+    public String createHelpConfig() {
+        out.getBuffer().setLength(0);
+
+        formatter.printWrapped(pw, WIDTH, "");
+        formatter.printHelp(pw, WIDTH, CMD_CONFIG, HEADER_CONFIG
+                , createOptionsConfig(), LEFT_PAD, DESC_PAD, "");
+
+        pw.flush();
+        out.flush();
+
+        return out.toString();
+    }
+
+    public String createHelpQuit() {
+        out.getBuffer().setLength(0);
+
+        formatter.printWrapped(pw, WIDTH, "");
+        formatter.printHelp(pw, WIDTH, CMD_QUIT.get(0), HEADER_QUIT
+                , createOptionsQuit(), LEFT_PAD, DESC_PAD, "");
+
+        pw.flush();
+        out.flush();
+
+        return out.toString();
+    }
+//    public String createHelpMove() {
+//        out.getBuffer().setLength(0);
+//
+//        formatter.printWrapped(pw, WIDTH, "");
+//        formatter.printHelp(pw, WIDTH, CMD_MOVE, ""
+//                , createOptionsMove(), LEFT_PAD, DESC_PAD, "");
+//
+//        pw.flush();
+//        out.flush();
+//
+//        return out.toString();
+//    }
 
 
-                    }
-                    case "quit":
-                    case "q":
-                        exit = true;
-                        System.out.println("quit");
-                        break;
 
-                    default:
-                        System.out.println("Invalid command. Type 'help' to see proper syntax");
-                }*/
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+    public String createHelpAll() {
+        StringBuilder sb = new StringBuilder();
 
+        sb.append(createHelpMove());
+        sb.append(createHelpAdd());
+        sb.append(createHelpRemove());
+        sb.append(createHelpShow());
+        sb.append(createHelpConfig());
+        sb.append(createHelpQuit());
 
-        }
+        return sb.toString();
+    }
 
-
+    public void printInvalidCommand(String command) {
+        System.out.println("Invalid command. Type '" + command + " -h' or '" + command + " --help'");
     }
 
 

@@ -27,6 +27,7 @@ public class Directory {
     public Directory(String name, String path, List<String> extensions) {
         this.name = name;
         this.extensions = extensions;
+        log.debug("Exts to str " + extensions.toString());
         if (path == null) {
             this.path = Config.getPathToMainFolder();
         } else {

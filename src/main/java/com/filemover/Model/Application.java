@@ -33,8 +33,12 @@ public class Application {
         this.cfg = new Config(this);
     }
 
+    public Config getCfg() {
+        return this.cfg;
+    }
+
     private void init() {
-        cfg.loadYAMLFile();
+        cfg.load();
         createAllFolders();
         addExtensionsToMap();
         initNameToDirMap();
@@ -76,6 +80,7 @@ public class Application {
 
             if (toSubFolders) {
                 dst = extensionsToFolderPath.get(file.getExtension());
+//                System.out.println("map ext to str " + extensionsToFolderPath.toString());
                 if (dst == null) {
                     sb.append("Files has not defined extension: ").append(file.getExtension())
                                 .append(" file name: ").append(file.getPath().getFileName());
@@ -119,11 +124,13 @@ public class Application {
 
 
 
-    private void createAllFolders() {
+    public void createAllFolders() {
         for (Directory directory :
                 this.directories) {
             directory.createFolder();
         }
+
+        addExtensionsToMap();
     }
 
     private void addExtensionsToMap() {

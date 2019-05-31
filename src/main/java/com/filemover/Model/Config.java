@@ -10,12 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
 import static com.filemover.Model.Constants.*;
 
 public class Config {
     /*
      TODO
       check if path to config.yml is ok when running program from jar
+      check if path exists in setPathToMainFolder
       use constructor in sneakyaml
       final pathToMainFolder? static initialization?
     */
@@ -33,12 +35,27 @@ public class Config {
     }
 
     public void setPathToMainFolder(String path) {
-        log.debug("Setting path of main folder to: " + path);
-        Config.pathToMainFolder = Paths.get(path);
+        try {
+            // check if path exists
+            log.debug("Setting path of main folder to: " + path);
+            Config.pathToMainFolder = Paths.get(path);
+        } catch (NullPointerException e) {
+            log.debug("Path to main folder is null");
+            e.printStackTrace();
+        }
     }
 
     public void loadDirectories(List<Object> directories) {
-        log.debug("Loading of directories delegated to Application");
+//        List<Object> directories = (List<Object>) data.get(PROP_DIRECTORIES);
+
+        if (directories == null) {
+            log.debug("List with directories is null. Propably bad format in config.yml");
+            throw new NullPointerException("Couldn't initialize data. Propably format of config.txt is wrong. " +
+                    "\nPlease try to configure it again. You can check example at " + GITHUB_PROJECT_LINK +
+                    " \nor restore it to default by command XY [not yet]");
+        }
+
+        log.debug("Loading directories...");
         for (Object obj :
                 directories) {
             Map<String, Object> props = (Map<String, Object>) obj;
@@ -58,30 +75,35 @@ public class Config {
         }
     }
 
-    public void loadYAMLFile() {
+    public void load() {
+        Map<String, Object> data = loadDataFromYAMLFile();
+
+        setPathToMainFolder((String) data.get(PROP_MAIN_FOLDER));
+
+        List<Object> directories = (List<Object>) data.get(PROP_DIRECTORIES);
+        loadDirectories(directories);
+
+    }
+
+    public List<Object> getDirectoriesFromYAML() {
+        Map<String, Object> data = loadDataFromYAMLFile();
+        return (List<Object>) data.get(PROP_DIRECTORIES);
+    }
+
+//    public void
+
+    public Map<String, Object> loadDataFromYAMLFile() {
         log.debug("Loading config");
         Yaml yaml = new Yaml();
 
-        try(InputStream input = new FileInputStream(new File(CONFIG_FILE_NAME))) {
+        try (InputStream input = new FileInputStream(new File(CONFIG_FILE_NAME))) {
 
             log.debug("Loading data from yaml");
-            Map<String, Object> data = yaml.load(input);
+            return yaml.load(input);
 
-            setPathToMainFolder((String) data.get(PROP_MAIN_FOLDER));
+//            setPathToMainFolder((String) data.get(PROP_MAIN_FOLDER));
+//            loadDirectories(directories);
 
-            List<Object> directories = (List<Object>) data.get(PROP_DIRECTORIES);
-
-            if (directories == null) {
-                log.debug("List with directories is null. Propably bad format in config.yml");
-                throw new NullPointerException("Couldn't initialize data. Propably format of config.txt is wrong. " +
-                        "\nPlease try to configure it again. You can check example at " + GITHUB_PROJECT_LINK +
-                        " \nor restore it to default by command XY [not yet]");
-            }
-
-            loadDirectories(directories);
-
-        } catch (NullPointerException e) {
-            log.error(e.getMessage());
         } catch (FileNotFoundException e) {
             log.error("Couldn't find \"config.txt\" file. Remember it has to be in the same place as program executable file filemover.jar [ check this !!!] ");
             e.printStackTrace();
@@ -89,6 +111,7 @@ public class Config {
             log.error("IO Exception: " + e.getMessage());
             e.printStackTrace();
         }
+        return null;
     }
 
     public void makeYAML() {

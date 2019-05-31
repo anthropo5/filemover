@@ -1,7 +1,7 @@
 package com.filemover;
 
 import com.filemover.Model.Application;
-import com.filemover.View.UserInterface;
+import com.filemover.View.CLI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,7 @@ public class Main {
         Application app = new Application();
         app.run();
 
-        UserInterface ui = new UserInterface(app);
+        CLI ui = new CLI(app);
         ui.runCLI();
 //        ui.run();
 
