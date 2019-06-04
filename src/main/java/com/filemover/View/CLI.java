@@ -22,7 +22,7 @@ public class CLI {
     public static final String OPTION_SHOW_DIR = "dp";
     public static final String OPTION_SHOW_MAIN = "m";
     public static final String OPTION_SHOW_MAIN_PATH = "mp";
-    public static final String OPTION_SHOW_SUB_FOLDERS = "s";
+    public static final String OPTION_SHOW_ALL_FILES = "s";
     public static final String OPTION_HELP = "h";
     public static final String OPTION_MOVE_FILES_TO_MAIN_FOLDER = "m";
     public static final String OPTION_ADD_FOLDER = "f";
@@ -60,13 +60,8 @@ public class CLI {
             "You have to save them or run 'quit' with proper flag: 'quit --save'";
     private final String HEADER_QUIT = "Type 'quit', 'q', 'exit' to exit program.";
 
-
-
-
-
     /*
     TODO
-        how getArgs works. test on executeAdd
         extract constants
         use lambda expressions to create execute commands  ??? not sure if possible
      */
@@ -79,161 +74,17 @@ public class CLI {
         this.formatter = new HelpFormatter();
     }
 
-    public void executeMove(String[] args) throws ParseException {
-        options = createOptionsMove();
-        cmd = parser.parse(options, args);
-        if (cmd.hasOption(OPTION_MOVE_FILES_TO_SUB_FOLDERS)) {
-            app.moveFilesToSubFolders();
-        } else if (cmd.hasOption(OPTION_MOVE_FILES_TO_MAIN_FOLDER)) {
-            app.moveAllFilesToMainFolder();
-        } else if (cmd.hasOption(OPTION_HELP)) {
-            formatter.printHelp(CMD_MOVE, createOptionsMove());
-        } else {
-            printInvalidCommand(CMD_CONFIG);
+
+    public void runCLI() {
+        System.out.println("Type 'help' to show all commands");
+        boolean exit = false;
+        while (!exit) {
+            System.out.print("> ");
+            String input = reader.nextLine();
+            exit = execute(input);
         }
     }
 
-    public void executeAdd(String[] args) throws ParseException {
-        options = createOptionsAdd();
-        cmd = parser.parse(options, args);
-        if (cmd.hasOption(OPTION_ADD_FOLDER)) {
-            // add folders
-//            String[] val = cmd.getOptionValues(OPTION_ADD_FOLDER);
-//            List<String> values = new ArrayList<>(Arrays.asList(val));
-//            app.addDirectoryWithExts(values);
-//
-
-            List<String> vals = cmd.getArgList();
-//            cmd.getOptionValues()
-            String[] values = cmd.getOptionValues(OPTION_ADD_FOLDER);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-            System.out.println("----");
-            for (String v :
-                    vals) {
-                System.out.println(v);
-            }
-        } else if (cmd.hasOption(OPTION_ADD_EXTENSIONS)) {
-            // add exts
-            String[] val = cmd.getOptionValues(OPTION_ADD_EXTENSIONS);
-            List<String> values = new ArrayList<>(Arrays.asList(val));
-            app.addExtensionsToFolder(values);
-        } else if (cmd.hasOption(OPTION_HELP)) {
-            formatter.printHelp(CMD_ADD, options);
-        } else {
-            printInvalidCommand(CMD_ADD);
-        }
-    }
-
-//    TODO add remove all
-    public void executeRemove(String[] args) throws ParseException {
-        options = createOptionsRemove();
-        cmd = parser.parse(options, args);
-//        cmd.ge
-        if (cmd.hasOption(OPTION_REMOVE_FOLDER)) {
-            String[] val = cmd.getOptionValues(OPTION_REMOVE_FOLDER);
-            List<String> values = new ArrayList<>(Arrays.asList(val));
-            app.removeDirectories(values);
-        } else if (cmd.hasOption(OPTION_REMOVE_EXTENSIONS)) {
-            // remove exts
-            String[] val = cmd.getOptionValues(OPTION_REMOVE_EXTENSIONS);
-            List<String> values = new ArrayList<>(Arrays.asList(val));
-        } else if (cmd.hasOption(OPTION_HELP)) {
-            formatter.printHelp(CMD_REMOVE, options);
-        } else {
-            formatter.printHelp(CMD_REMOVE, options);
-        }
-    }
-
-    // get arg list on beginning, pass first as folder name -> delete first -> pass exts
-    public void executeConfig(String[] args) throws ParseException {
-
-        options = createOptionsConfig();
-        cmd = parser.parse(options, args);
-        if (cmd.hasOption(OPTION_CONFIG_LOAD)) {
-            // load cfg
-            List<String> vals = cmd.getArgList();
-            String[] values = cmd.getOptionValues(OPTION_CONFIG_LOAD);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-            System.out.println("----");
-            for (String v :
-                    vals) {
-                System.out.println(v);
-            }
-        } else if (cmd.hasOption("s")) {
-            // save cfg
-            String[] values = cmd.getOptionValues("s");
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        } else if (cmd.hasOption("h")) {
-            formatter.printHelp("remove", options);
-        } else {
-            formatter.printHelp("remove", options);
-        }
-    }
-
-    public void executeShow(String[] args) throws ParseException {
-        options = createOptionsShow();
-        cmd = parser.parse(options, args);
-        if (cmd.hasOption(OPTION_SHOW_DIRS)) {
-            // load cfg
-            String[] values = cmd.getOptionValues(OPTION_SHOW_DIRS);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        } else if (cmd.hasOption(OPTION_SHOW_DIR)) {
-            // save cfg
-            String[] values = cmd.getOptionValues(OPTION_SHOW_DIR);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        } else if (cmd.hasOption(OPTION_SHOW_MAIN)) {
-            // save cfg
-            String[] values = cmd.getOptionValues(OPTION_SHOW_MAIN);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        } else if (cmd.hasOption(OPTION_SHOW_MAIN_PATH)) {
-            // save cfg
-            String[] values = cmd.getOptionValues(OPTION_SHOW_MAIN_PATH);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        } else if (cmd.hasOption(OPTION_SHOW_SUB_FOLDERS)) {
-            // save cfg
-            String[] values = cmd.getOptionValues(OPTION_SHOW_SUB_FOLDERS);
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        } else if (cmd.hasOption(OPTION_HELP)) {
-            formatter.printHelp("show", options);
-        } else {
-            formatter.printHelp("show", options);
-        }
-    }
-
-    public void executeQuit(String[] args) throws ParseException {
-        options = createOptionsQuit();
-        cmd = parser.parse(options, args);
-        if (cmd.hasOption("s")) {
-            // save cfg
-            String[] values = cmd.getOptionValues("s");
-            for (int i = 0; i < values.length; i++) {
-                System.out.println(values[i]);
-            }
-        }
-    }
-
-//  public void executeAdd(String[] args) throws ParseException {
-//  }
-
-    public void executeHelp() {
-        System.out.println(createHelpAll());
-    }
 
     public boolean execute(String input) {
         String[] args = input.split("\\s");
@@ -247,65 +98,125 @@ public class CLI {
                 executeRemove(args);
             } else if (command.equals(CMD_CONFIG)) {
                 executeConfig(args);
-                // f m h
             } else if (command.equals(CMD_SHOW)) {
                 executeShow(args);
-//                } else if (command.equals(CMD_REMOVE)) {
-//                } else if (command.equals(CMD_REMOVE)) {
-//                } else if (command.equals(CMD_REMOVE)) {
-//                } else if (command.equals(CMD_REMOVE)) {
-
             } else if (command.equals(CMD_HELP)) {
-//            System.out.println(createHelpAll());
                 executeHelp();
             } else if (CMD_QUIT.contains(command)) {
                 executeQuit(args);
-//                exit = true;
-//                System.out.println("quit");
                 return true;
             } else {
                 System.out.println("Invalid input. Type 'help' to show all commands ");
             }
-//            return false;
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public void runCLI() {
-        log.debug("CLI started");
-            execute("add qwe xzc -f folder sd xcz we");
 
-//            System.out.println("-------------------------------------------------");
-//            execute("help");
-
-
-//        System.out.println("Type 'help' to show all commands");
-//        boolean exit = false;
-//        while (!exit) {
-//            System.out.print("> ");
-////            String fakeInput = "help";
-////            reader = new Scanner(fakeInput);
-//            String input = reader.nextLine();
-////            String[] args = reader.nextLine().split("\\s");
-////            exit = true;
-//            exit = execute(input);
-//        }
+    public void executeMove(String[] args) throws ParseException {
+        options = createOptionsMove();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption(OPTION_MOVE_FILES_TO_SUB_FOLDERS)) {
+            app.moveFilesToSubFolders();
+        } else if (cmd.hasOption(OPTION_MOVE_FILES_TO_MAIN_FOLDER)) {
+            app.moveAllFilesToMainFolder();
+        } else if (cmd.hasOption(OPTION_HELP)) {
+            System.out.println(createHelpMove());
+        } else {
+            printInvalidCommand(CMD_CONFIG);
+        }
     }
 
-    public void printHelpConfig() {
-        printHelp(CMD_CONFIG, HEADER_CONFIG, createOptionsConfig(), "");
+    public void executeAdd(String[] args) throws ParseException {
+        options = createOptionsAdd();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption(OPTION_ADD_FOLDER)) {
+            String[] val = cmd.getOptionValues(OPTION_ADD_FOLDER);
+            List<String> values = new ArrayList<>(Arrays.asList(val));
+            app.addDirectoryWithExts(values);
+        } else if (cmd.hasOption(OPTION_ADD_EXTENSIONS)) {
+            String[] val = cmd.getOptionValues(OPTION_ADD_EXTENSIONS);
+            List<String> values = new ArrayList<>(Arrays.asList(val));
+            app.addExtensionsToFolder(values);
+        } else if (cmd.hasOption(OPTION_HELP)) {
+            System.out.println(createHelpAdd());
+        } else {
+            printInvalidCommand(CMD_ADD);
+        }
     }
 
-
-    public void printHelp(String command, String header, Options options, String footer) {
-        formatter.printHelp(command, header, options, footer);
+    //    TODO add remove all
+    public void executeRemove(String[] args) throws ParseException {
+        options = createOptionsRemove();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption(OPTION_REMOVE_FOLDER)) {
+            String[] val = cmd.getOptionValues(OPTION_REMOVE_FOLDER);
+            List<String> values = new ArrayList<>(Arrays.asList(val));
+            app.removeDirectories(values);
+        } else if (cmd.hasOption(OPTION_REMOVE_EXTENSIONS)) {
+            String[] val = cmd.getOptionValues(OPTION_REMOVE_EXTENSIONS);
+            List<String> values = new ArrayList<>(Arrays.asList(val));
+            app.removeExtensionsFromDirectory(values);
+        } else if (cmd.hasOption(OPTION_HELP)) {
+            System.out.println(createHelpRemove());
+        } else {
+            printInvalidCommand(CMD_REMOVE);
+        }
     }
 
-    public void printHelpMove() {
-        formatter.printHelp(CMD_MOVE, HEADER_CONFIG, createOptionsMove(), "");
+    public void executeConfig(String[] args) throws ParseException {
+        options = createOptionsConfig();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption(OPTION_CONFIG_LOAD)) {
+            app.loadConfig();
+        } else if (cmd.hasOption("s")) {
+            app.saveConfig();
+        } else if (cmd.hasOption("h")) {
+            System.out.println(createHelpConfig());
+        } else {
+            printInvalidCommand(CMD_CONFIG);
+        }
     }
+
+    public void executeShow(String[] args) throws ParseException {
+        options = createOptionsShow();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption(OPTION_SHOW_DIRS)) {
+            app.showDirectories();
+        } else if (cmd.hasOption(OPTION_SHOW_DIR)) {
+            String value = cmd.getOptionValue(OPTION_SHOW_DIR);
+            app.showDirectory(value);
+        } else if (cmd.hasOption(OPTION_SHOW_MAIN)) {
+            app.loadAndShowFilesInMainFolder();
+        } else if (cmd.hasOption(OPTION_SHOW_MAIN_PATH)) {
+            app.showMainFolderPath();
+        } else if (cmd.hasOption(OPTION_SHOW_ALL_FILES)) {
+            app.showFilesInAllFolders();
+        } else if (cmd.hasOption(OPTION_HELP)) {
+            System.out.println(createHelpShow());
+        } else {
+            printInvalidCommand(CMD_SHOW);
+        }
+    }
+
+    public void executeQuit(String[] args) throws ParseException {
+        options = createOptionsQuit();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption("s")) {
+            app.saveConfig();
+        } else if (cmd.hasOption("h")) {
+            System.out.println(createHelpQuit());
+        } else {
+//            printInvalidCommand(CMD_QUIT.get(0));
+        }
+    }
+
+    public void executeHelp() {
+        System.out.println(createHelpAll());
+    }
+
 
     public Options createOptionsMove() {
         Options options = new Options();
@@ -437,7 +348,7 @@ public class CLI {
                 .hasArg(false)
                 .build());
 
-        options.addOption(Option.builder(OPTION_SHOW_SUB_FOLDERS)
+        options.addOption(Option.builder(OPTION_SHOW_ALL_FILES)
                 .longOpt("sub")
                 .desc("show files in sub-folders")
                 .hasArg(false)
@@ -563,159 +474,8 @@ public class CLI {
         return sb.toString();
     }
 
+
     public void printInvalidCommand(String command) {
         System.out.println("Invalid command. Type '" + command + " -h' or '" + command + " --help'");
-    }
-
-//    public void run() {
-//        app.run();
-//
-//        printMainFolder();
-//
-//        boolean exit = false;
-//        while (!exit) {
-//            showMenu();
-//
-//            int number;
-//            try {
-//                System.out.print("> ");
-//                number = Integer.parseInt(reader.nextLine());
-//            } catch (Exception e) {
-//                System.out.println("!!! You have to type number related to option.");
-//                continue;
-//            }
-//
-//            switch (number) {
-//                case 1:
-//                    app.showDirectories();
-//                    break;
-//                case 2:
-//                    app.loadAndShowFilesInMainFolder();
-//                    break;
-//                case 3:
-//                    app.moveFilesToSubFolders();
-//                    System.out.println("\nErrors and warnings occured while processing");
-////                    Logger.showErrors();
-////                    Logger.showWarnings();
-////                    Logger.clear();
-//                    break;
-//                case 4:
-//                    app.moveAllFilesToMainFolder();
-//                    System.out.println("\nErrors and warnings occured while processing");
-////                    Logger.showErrors();
-////                    Logger.showWarnings();
-////                    Logger.clear();
-//                    break;
-//                case 5:
-//                    printMainFolder();
-//                    break;
-//                case 6:
-//                    app.sortFilesBy(SortingOption.NAME);
-//                    app.showFiles();
-//                    break;
-//                case 7:
-//                    app.sortFilesBy(SortingOption.SIZE);
-//                    app.showFiles();
-//                    break;
-//                case 8:
-//                    app.sortFilesBy(SortingOption.EXTENSION);
-//                    app.showFiles();
-//                    break;
-//                case 9:
-//                    app.sortFilesBy(SortingOption.CREATION_TIME);
-//                    app.showFiles();
-//                    break;
-//                case 10: {
-//                    System.out.println("Type a folder name: ");
-//                    String name = reader.nextLine();
-//                    app.addDirectory(name); // name validation
-//                    break;
-//                }
-//                case 11: {
-//                    System.out.println("Choose a folder - type a name");
-//                    String line = reader.nextLine();
-//                    Directory dir = app.getDirectoryByName(line);
-//                    if (dir == null) {
-//                        System.out.println("Directory doesnt exists");
-//                    } else {
-//                        System.out.println("Type extensions separated by space: ");
-//                        line = reader.nextLine();
-//                        String[] exts = line.trim().split(" ");
-//                        for (int i = 0; i < exts.length; i++) {
-//                            dir.addExtension(exts[i]);
-//                        }
-//                    }
-//                    break;
-//                }
-//                case 12: {
-//                    System.out.println("Type folder to delete: ");
-//                    String line = reader.nextLine();
-//                    Directory dir = app.getDirectoryByName(line);
-//                    if (dir != null) {
-//                        app.removeDirectory(dir);
-//                    } else {
-//                        System.out.println("Directory doesnt exists");
-//                    }
-//                    break;
-//                }
-//                case 13: {
-//                    System.out.println("Type folder to change");
-//                    String line = reader.nextLine();
-//                    Directory dir = app.getDirectoryByName(line);
-//                    if (dir == null) {
-//                        System.out.println("Directory doesnt exists");
-//                        break;
-//                    }
-//                    System.out.println("Type exts to delete");
-//                    line = reader.nextLine();
-//                    String[] exts = line.trim().split(" ");
-//                    for (int i = 0; i < exts.length; i++) {
-//                        dir.removeExtension(exts[i]);
-//                    }
-//                    break;
-//                }
-//                case 99:
-//                    exit = true;
-//                    break;
-////                case 90:
-////                    exit = true;
-////                    app.makeAndSaveConfig();
-////                    break;
-//
-//                default:
-//                    System.out.println("Choose appropiate option");
-//            }
-//        }
-//        reader.close();
-//    }
-//    private void showMenu() {
-//        int option = 1;
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("\n=== Menu:\n");
-//        sb.append(option++).append(". Show dirs \n");
-//        sb.append(option++).append(". Show files in main folder \n");
-//        sb.append(option++).append(". Copy from main folder to sub-folders \n");
-//        sb.append(option++).append(". Copy from folders to main folder \n");
-//        sb.append(option++).append(". Show main folder \n");
-//        sb.append("\n");
-//        sb.append(option++).append(". Sort files by name \n");
-//        sb.append(option++).append(". Sort files by size \n");
-//        sb.append(option++).append(". Sort files by extension \n");
-//        sb.append(option++).append(". Sort files by creation time \n");
-//        sb.append("\n");
-//        sb.append(option++).append(". Add folder \n");
-//        sb.append(option++).append(". Add extensions to folder \n");
-//        sb.append(option++).append(". Delete directory \n");
-//        sb.append(option++).append(". Remove extensions from specified directory \n");
-//        sb.append("99. Exit\n");
-////        sb.append(option++).append(". Exit and save config\n");
-//
-//        System.out.println(sb.toString());
-//    }
-
-
-    private void printMainFolder() {
-        System.out.println("\nMain folder path: " + Config.getPathToMainFolder());
-        System.out.println("Main folder name: " + Config.getPathToMainFolder().getFileName());
     }
 }

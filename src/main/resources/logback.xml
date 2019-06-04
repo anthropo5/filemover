@@ -8,10 +8,10 @@
         </encoder>
     </appender>
 
-    <logger name="com.filemover" level="info"/>
+<!--    <logger name="com.filemover" level="info"/>-->
 <!--    <logger name="com.filemover" level="warning"/>-->
 <!--    <logger name="com.filemover" level="error"/>-->
-<!--    <logger name="com.filemover" level="debug"/>-->
+    <logger name="com.filemover" level="debug"/>
 
     <root level="debug">
         <appender-ref ref="STDOUT" />

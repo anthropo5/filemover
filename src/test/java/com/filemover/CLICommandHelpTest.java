@@ -15,10 +15,10 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class CLICommandMoveTest {
+public class CLICommandHelpTest {
     public static CLI cli;
     public static Application app;
-//    public static String expectedHelpMenu;
+
     static {
         app = new Application();
         cli = new CLI(app);
@@ -27,14 +27,23 @@ public class CLICommandMoveTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-//                { "0, 0 }, { 1, 1 }, { 2, 1 }, { 3, 2 }, { 4, 3 }, { 5, 5 }, { 6, 8 }
-                // have to add \n becouse in exectue help is shown by sout which adds additional line
-                {"help", CLICommandMoveTest.cli.createHelpAll() + "\n" },
-//                {"move --help", CLICommandMoveTest.cli.createHelp }
-//                {"0", "2"},
-//                {"1", "0"},
-//                {"0", "0"},
-
+                {"move --help", CLICommandHelpTest.cli.createHelpMove().trim() },
+                {"move -h", CLICommandHelpTest.cli.createHelpMove().trim() },
+                {"config -h", CLICommandHelpTest.cli.createHelpConfig().trim() },
+                {"config --help", CLICommandHelpTest.cli.createHelpConfig().trim() },
+                {"show -h", CLICommandHelpTest.cli.createHelpShow().trim() },
+                {"show --help", CLICommandHelpTest.cli.createHelpShow().trim() },
+                {"remove -h", CLICommandHelpTest.cli.createHelpRemove().trim() },
+                {"remove --help", CLICommandHelpTest.cli.createHelpRemove().trim() },
+                {"add -h", CLICommandHelpTest.cli.createHelpAdd().trim() },
+                {"add --help", CLICommandHelpTest.cli.createHelpAdd().trim() },
+                {"quit -h", CLICommandHelpTest.cli.createHelpQuit().trim() },
+                {"quit --help", CLICommandHelpTest.cli.createHelpQuit().trim() },
+                {"q -h", CLICommandHelpTest.cli.createHelpQuit().trim() },
+                {"q --help", CLICommandHelpTest.cli.createHelpQuit().trim() },
+                {"exit -h", CLICommandHelpTest.cli.createHelpQuit().trim() },
+                {"exit --help", CLICommandHelpTest.cli.createHelpQuit().trim() },
+                {"help", CLICommandHelpTest.cli.createHelpAll().trim() },
         });
     }
 
@@ -44,7 +53,7 @@ public class CLICommandMoveTest {
     private ByteArrayOutputStream testOutput;
 
 
-    public CLICommandMoveTest(String input, String expected) {
+    public CLICommandHelpTest(String input, String expected) {
         this.input = input;
         this.expected = expected;
     }
@@ -53,27 +62,19 @@ public class CLICommandMoveTest {
     public void test() throws ParseException {
 
         testOutput = new ByteArrayOutputStream();
-//            CLICommandMoveTest.cli.execute(input);
-
         try {
             System.setOut(new PrintStream(testOutput));
-            CLICommandMoveTest.cli.execute(input);
-
-//            System.out.println(CLICommandMoveTest.cli.createHelpAll());
-
-//            System.out.println("abc");
-//            System.out.println("qwe");
+            CLICommandHelpTest.cli.execute(input);
         } finally {
             System.setOut(console);
         }
-//        System.out.println(testOutput);
-//        System.out.println(expected);
-
-        assertEquals(expected, testOutput.toString());
+        assertEquals(expected, testOutput.toString().trim());
     }
-
-
 }
+
+
+//
+// example of parametrized test class
 
 //import static org.junit.Assert.assertEquals;
 //

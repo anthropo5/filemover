@@ -40,16 +40,11 @@ public class Application {
     private void init() {
         cfg.load();
         createAllFolders();
-//        addExtensionsToMap();
-//        initNameToDirMap();
         loadFilesFromMainFolder();
     }
 
     public void run() {
         init();
-
-
-
     }
 
 
@@ -148,7 +143,15 @@ public class Application {
 //        }
 //    }
 
-    private int loadFilesFromAllFolders() {
+    public void loadConfig() {
+        cfg.load();
+    }
+
+    public void saveConfig() {
+        cfg.makeYAML();
+    }
+
+    public int loadFilesFromAllFolders() {
         log.debug("FilesInfo is cleared ");
         this.filesInfo.clear();
         try (Stream<Path> walk = Files.walk(Config.getPathToMainFolder())) {
@@ -166,7 +169,7 @@ public class Application {
         return this.filesInfo.size();
     }
 
-    private int loadFilesFromMainFolder() {
+    public int loadFilesFromMainFolder() {
         Path dir = Config.getPathToMainFolder();
         log.debug("FilesInfo is cleared ");
         this.filesInfo.clear();
@@ -232,10 +235,14 @@ public class Application {
     }
 
     public boolean removeDirectory(Directory dir) {
-//        Directory toDelete = new Directory(name);
+        if (dir == null) {
+            return false;
+        }
+
         log.debug("Deleting directory: " + dir.getName());
 
         if(directories.remove(dir)) {
+            nameToDir.remove(dir.getName());
             log.debug("Directory " + dir.getName() + " deleted.");
             return true;
         }
@@ -273,11 +280,12 @@ public class Application {
 
     public boolean removeExtensionsFromDirectory(List<String> args) {
         String name = args.get(0);
-        if(!addDirectory(name)) {
+        Directory dir = getDirectoryByName(name);
+        if (dir == null) {
             return false;
         }
         args.remove(0);
-        getDirectoryByName(name).removeExtensions(args);
+        dir.removeExtensions(args);
         return true;
     }
 
@@ -321,7 +329,6 @@ public class Application {
 
 
     public void showFiles() {
-        System.out.println("There is " + filesInfo.size() + " files in main folder\n");
         for (FileInfo file :
                 filesInfo) {
             System.out.println(file);
@@ -329,14 +336,37 @@ public class Application {
     }
 
     public void showDirectories() {
+        if (directories.isEmpty()) {
+            System.out.println("There is no defined directory");
+            return;
+        }
         for (Directory dir :
                 directories) {
             System.out.println(dir);
         }
     }
 
+    public void showDirectory(String name) {
+        Directory dir = getDirectoryByName(name);
+        if(dir == null) {
+            System.out.println("There is no directory " + name);
+            return;
+        }
+        System.out.println(dir);
+    }
+
+    public void showMainFolderPath() {
+        System.out.println("Main folder path: " + Config.getPathToMainFolder().toString());
+        System.out.println("Main folder name: " + Config.getPathToMainFolder().getFileName());
+    }
+
     public void loadAndShowFilesInMainFolder() {
         loadFilesFromMainFolder();
+        showFiles();
+    }
+
+    public void showFilesInAllFolders() {
+        loadFilesFromAllFolders();
         showFiles();
     }
 

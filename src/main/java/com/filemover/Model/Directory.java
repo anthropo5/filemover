@@ -182,7 +182,14 @@ public class Directory {
         if (!this.path.toString().equals(Config.getPathToMainFolder().toString())) {
             dir.put(PROP_PATH, this.path.toString());
         }
-        dir.put(PROP_EXTENSIONS, this.extensions);
+        String exts = "";
+        for (String ext :
+                extensions) {
+            exts += ext;
+
+        }
+//        dir.put(PROP_EXTENSIONS, this.extensions);
+        dir.put(PROP_EXTENSIONS, exts);
         return dir;
     }
 

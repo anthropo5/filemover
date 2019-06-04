@@ -1,19 +1,23 @@
-main folder: /home/kusy/git/filemover/_testfolder
+main folder: /tmp/junit10110273286683362325/config_test.txt
 directories:
 - name: doc
-  path: /home/kusy/git/filemover/_testfolder2
-  extensions: [txt pdf xlsx pptx doc docx]
+  path: /tmp/junit10110273286683362325
+  extensions: [txt, pdf, xlsx, pptx, doc, docx]
 - name: img
-  extensions: [jpg jpeg png gif]
+  path: /tmp/junit10110273286683362325
+  extensions: [jpg, jpeg, png, gif]
 - name: video
+  path: /tmp/junit10110273286683362325
   extensions: [mp4]
 - name: music
-  extensions: [mp3 flac]
+  path: /tmp/junit10110273286683362325
+  extensions: [mp3, flac]
 - name: rar
-  extensions: [7zip rar zip]
+  path: /tmp/junit10110273286683362325
+  extensions: [7zip, rar, zip]
 - name: exe
-  extensions: [msi exe]
+  path: /tmp/junit10110273286683362325
+  extensions: [msi, exe]
 - name: gp5
-  extensions: [gp3 gp4 gp5 gpx]
-- name: iso
-  extensions: [iso]
+  path: /tmp/junit10110273286683362325
+  extensions: [gp3, gp4, gp5, gpx]
