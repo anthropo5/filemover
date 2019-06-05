@@ -22,6 +22,7 @@ public class DirectoryTest {
     private Application app;
     private Config cfg;
 
+    // TODO create folder in tempFolder
     public final String NAME = "folder_name";
     public final String PATH = "/home/kusy/git/filemover/_testfolder2";
     public final List<String> EXTENSIONS = new ArrayList<>(Arrays.asList("ext1", "ext2", "ext3"));
@@ -40,7 +41,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void directoryConstructor_AllParameters() {
+    public void testIfDirectoryIsCreated_WithAllParameters() {
         Directory dir = new Directory(NAME, PATH, EXTENSIONS);
 
         assertEquals("Wrong dir name", NAME, dir.getName());
@@ -49,7 +50,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void directoryConstructor_WithoutPath() {
+    public void testIfDirectoryIsCreated_WithoutPath() {
         Directory dir = new Directory(NAME, null, EXTENSIONS);
 
         assertEquals("Wrong dir name", NAME, dir.getName());
@@ -59,7 +60,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void test_addOneExtension() {
+    public void testIfOneExtensionsIsAdded() {
         Directory dir = new Directory(NAME, PATH, EXTENSIONS);
         List<String> expected = new ArrayList<>(Arrays.asList("ext1", "ext2", "ext3", "ext4"));
 
@@ -72,7 +73,7 @@ public class DirectoryTest {
 
 
     @Test
-    public void test_addManyExtensions() {
+    public void testIfManyExtensionsAreAdded() {
         Directory dir;
         List<String> expected;
 
@@ -88,7 +89,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void test_removeOneExtension() {
+    public void testIfExtensionsIsRemoved() {
         Directory dir = new Directory(NAME, PATH, EXTENSIONS);
         List<String> expected = new ArrayList<>(Arrays.asList("ext1", "ext3"));
 
@@ -99,7 +100,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void test_removeManyExtensions() {
+    public void testIfManyExtensionsAreRemoved() {
         List<String> expected = new ArrayList<>(Arrays.asList("ext1"));
         Directory dir;
 
@@ -113,7 +114,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void test_createFolder() throws IOException {
+    public void testIfFolderIsCreated() throws IOException {
 
         String parent = temporaryFolder.newFile("file.txt").getParent();
         temporaryFolder.newFile("file.mp4");

@@ -10,13 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Application {
-
-    /*
-    TODO
-        test logic
-
-     */
-
     private static final Logger log = LoggerFactory.getLogger(Application.class);
 
     private Config cfg;
@@ -37,15 +30,15 @@ public class Application {
         return this.cfg;
     }
 
-    private void init() {
+    public void init() {
         cfg.load();
         createAllFolders();
         loadFilesFromMainFolder();
     }
 
-    public void run() {
-        init();
-    }
+//    public void run() {
+//        init();
+//    }
 
 
 
@@ -121,13 +114,6 @@ public class Application {
 //        addExtensionsToMap();
     }
 
-    private void mapExtensionsToPath() {
-        for (Directory dir :
-                directories) {
-            mapExtensionsToPath(dir);
-        }
-    }
-
     public void mapExtensionsToPath(Directory dir) {
         for (String ext :
                 dir.getExtensions()) {
@@ -135,13 +121,6 @@ public class Application {
             log.debug(ext + " ext is related with " + dir.getName());
         }
     }
-
-//    private void initNameToDirMap() {
-//        for (Directory dir :
-//                directories) {
-//            this.nameToDir.put(dir.getName(), dir);
-//        }
-//    }
 
     public void loadConfig() {
         cfg.load();
@@ -208,6 +187,10 @@ public class Application {
         return dir;
     }
 
+    public List<Directory> getDirectories() {
+        return this.directories;
+    }
+
 
     // CLI API
 
@@ -266,6 +249,11 @@ public class Application {
     }
 
     public void removeDirectories(List<String> dirs) {
+        if (dirs == null) {
+            log.debug("Args is null");
+            return;
+        }
+
         for (String dir :
                 dirs) {
             removeDirectory(dir);
@@ -273,12 +261,14 @@ public class Application {
     }
 
 
-    public List<Directory> getDirectories() {
-        return this.directories;
-    }
 
 
     public boolean removeExtensionsFromDirectory(List<String> args) {
+        if (args == null) {
+            log.debug("Args is null");
+            return false;
+        }
+
         String name = args.get(0);
         Directory dir = getDirectoryByName(name);
         if (dir == null) {
@@ -290,6 +280,10 @@ public class Application {
     }
 
     public boolean addDirectoryWithExts(List<String> args) {
+        if (args == null) {
+            log.debug("Args is null");
+            return false;
+        }
         String name = args.get(0);
         if(!addDirectory(name)) {
             return false;
@@ -312,16 +306,12 @@ public class Application {
 
     public void sortFilesBy(SortingOption sortingOption) {
         if(sortingOption == SortingOption.NAME) {
-//            Logger.log("Sorting by name ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing( file -> file.getPath().getFileName().toString()));
         } else if (sortingOption == SortingOption.EXTENSION) {
-//            Logger.log("Sorting by extension ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing(FileInfo::getExtension));
         } else if (sortingOption == SortingOption.SIZE) {
-//            Logger.log("Sorting by size ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing(FileInfo::getSize));
         } else if (sortingOption == SortingOption.CREATION_TIME) {
-//            Logger.log("Sorting by creation time ", Message.DEBUG);
             filesInfo.sort(Comparator.comparing(FileInfo::getCreationTime));
         }
     }

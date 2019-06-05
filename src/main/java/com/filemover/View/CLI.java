@@ -1,7 +1,8 @@
 package com.filemover.View;
 
 import com.filemover.Model.Application;
-import com.filemover.Model.Config;
+import com.filemover.Model.SortingOption;
+import static com.filemover.Model.Constants.CLI.*;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,22 +15,25 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CLI {
+
+        /*
+        TODO
+            - what I should do to make program easier to maintain and extensible?
+                         things need to add with new command
+                         - createOptionsCMD
+                         - createHelpCMD
+                         - executeCMD
+                         - new if else in execute method
+                         what I should do to make program easier to maintain and extensible?
+            - use lambda expressions to create execute commands  ??? not sure if possible
+            - create class which will be creating things above?
+
+        TODO
+            - catch MissingArgumentException
+
+         */
+
     private static final Logger log = LoggerFactory.getLogger(Application.class);
-
-    public static final String OPTION_MOVE_FILES_TO_SUB_FOLDERS = "f";
-
-    public static final String OPTION_SHOW_DIRS = "d";
-    public static final String OPTION_SHOW_DIR = "dp";
-    public static final String OPTION_SHOW_MAIN = "m";
-    public static final String OPTION_SHOW_MAIN_PATH = "mp";
-    public static final String OPTION_SHOW_ALL_FILES = "s";
-    public static final String OPTION_HELP = "h";
-    public static final String OPTION_MOVE_FILES_TO_MAIN_FOLDER = "m";
-    public static final String OPTION_ADD_FOLDER = "f";
-    public static final String OPTION_ADD_EXTENSIONS = "e";
-    public static final String OPTION_REMOVE_FOLDER = "f";
-    public static final String OPTION_REMOVE_EXTENSIONS = "e";
-    public static final String OPTION_CONFIG_LOAD = "l";
 
     private Application app;
     private Scanner reader;
@@ -40,32 +44,6 @@ public class CLI {
     private StringWriter out = new StringWriter();
     private PrintWriter pw = new PrintWriter(out);
 
-    private final int LEFT_PAD = 1;
-    private final int DESC_PAD = 3;
-    private final int WIDTH = 80;
-
-
-    // diffrent name, because it is removing folder only from program memory and the you have to save config
-    private final String CMD_REMOVE = "remove";
-    private final String CMD_ADD = "add";
-    private final String CMD_HELP = "help";
-    private final String CMD_CONFIG = "config";
-    private final String CMD_SHOW = "show";
-    private final String CMD_MOVE = "move";
-    private final List<String> CMD_QUIT = new ArrayList<>(Arrays.asList("quit", "q", "exit"));
-
-    private final String HEADER_CONFIG = "Config is loaded form file when program is started.\n" +
-            "If you made change in config file while program is running, you have to load config again.\n" +
-            "Changes in config made in application are not saved automatically.\n" +
-            "You have to save them or run 'quit' with proper flag: 'quit --save'";
-    private final String HEADER_QUIT = "Type 'quit', 'q', 'exit' to exit program.";
-
-    /*
-    TODO
-        extract constants
-        use lambda expressions to create execute commands  ??? not sure if possible
-     */
-
     public CLI(Application app) {
         this.app = app;
         this.reader = new Scanner(System.in);
@@ -73,7 +51,6 @@ public class CLI {
         this.options = new Options();
         this.formatter = new HelpFormatter();
     }
-
 
     public void runCLI() {
         System.out.println("Type 'help' to show all commands");
@@ -84,7 +61,6 @@ public class CLI {
             exit = execute(input);
         }
     }
-
 
     public boolean execute(String input) {
         String[] args = input.split("\\s");
@@ -100,6 +76,8 @@ public class CLI {
                 executeConfig(args);
             } else if (command.equals(CMD_SHOW)) {
                 executeShow(args);
+            } else if (command.equals(CMD_SORT)) {
+                executeSort(args);
             } else if (command.equals(CMD_HELP)) {
                 executeHelp();
             } else if (CMD_QUIT.contains(command)) {
@@ -180,6 +158,28 @@ public class CLI {
         }
     }
 
+    public void executeSort(String[] args) throws ParseException {
+        options = createOptionsShow();
+        cmd = parser.parse(options, args);
+        if (cmd.hasOption(OPTION_SORT_BY_NAME)) {
+            app.sortFilesBy(SortingOption.NAME);
+            app.showFiles();
+        } else if (cmd.hasOption(OPTION_SORT_BY_SIZE)) {
+            app.sortFilesBy(SortingOption.SIZE);
+            app.showFiles();
+        } else if (cmd.hasOption(OPTION_SORT_BY_CREATION_TIME)) {
+            app.sortFilesBy(SortingOption.CREATION_TIME);
+            app.showFiles();
+        } else if (cmd.hasOption(OPTION_SORT_BY_EXTENSION)) {
+            app.sortFilesBy(SortingOption.EXTENSION);
+            app.showFiles();
+        } else if (cmd.hasOption(OPTION_HELP)) {
+            System.out.println(createHelpShow());
+        } else {
+            printInvalidCommand(CMD_SHOW);
+        }
+    }
+
     public void executeShow(String[] args) throws ParseException {
         options = createOptionsShow();
         cmd = parser.parse(options, args);
@@ -200,6 +200,7 @@ public class CLI {
             printInvalidCommand(CMD_SHOW);
         }
     }
+
 
     public void executeQuit(String[] args) throws ParseException {
         options = createOptionsQuit();
@@ -363,6 +364,42 @@ public class CLI {
         return options;
     }
 
+    public Options createOptionsSort() {
+        Options options = new Options();
+
+        options.addOption(Option.builder(OPTION_SORT_BY_NAME)
+                .longOpt("name")
+                .desc("sort files by name")
+                .hasArg(false)
+                .build());
+
+        options.addOption(Option.builder(OPTION_SORT_BY_SIZE)
+                .longOpt("size")
+                .desc("sort files by size ")
+                .hasArg(false)
+                .build());
+
+        options.addOption(Option.builder(OPTION_SORT_BY_EXTENSION)
+                .longOpt("extension")
+                .desc("sort files by extension")
+                .hasArg(false)
+                .build());
+
+        options.addOption(Option.builder(OPTION_SORT_BY_CREATION_TIME)
+                .longOpt("-d")
+                .desc("sort files by creation time (date)")
+                .hasArg(false)
+                .build());
+
+        options.addOption(Option.builder(OPTION_HELP)
+                .longOpt("help")
+                .hasArg(false)
+                .desc("show help")
+                .build());
+
+        return options;
+    }
+
     public Options createOptionsQuit() {
         Options options = new Options();
 
@@ -386,7 +423,7 @@ public class CLI {
         out.getBuffer().setLength(0);
 
         formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, CMD_MOVE, ""
+        formatter.printHelp(pw, WIDTH, CMD_MOVE, HEADER_MOVE
                 , createOptionsMove(), LEFT_PAD, DESC_PAD, "");
 
         pw.flush();
@@ -399,7 +436,7 @@ public class CLI {
         out.getBuffer().setLength(0);
 
         formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, CMD_ADD, ""
+        formatter.printHelp(pw, WIDTH, CMD_ADD, HEADER_ADD
                 , createOptionsAdd(), LEFT_PAD, DESC_PAD, "");
 
 
@@ -413,7 +450,7 @@ public class CLI {
         out.getBuffer().setLength(0);
 
         formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, CMD_REMOVE, ""
+        formatter.printHelp(pw, WIDTH, CMD_REMOVE, HEADER_REMOVE
                 , createOptionsRemove(), LEFT_PAD, DESC_PAD, "");
 
         pw.flush();
@@ -426,8 +463,21 @@ public class CLI {
         out.getBuffer().setLength(0);
 
         formatter.printWrapped(pw, WIDTH, "");
-        formatter.printHelp(pw, WIDTH, CMD_SHOW, ""
+        formatter.printHelp(pw, WIDTH, CMD_SHOW, HEADER_SHOW
                 , createOptionsShow(), LEFT_PAD, DESC_PAD, "");
+
+        pw.flush();
+        out.flush();
+
+        return out.toString();
+    }
+
+    public String createHelpSort() {
+        out.getBuffer().setLength(0);
+
+        formatter.printWrapped(pw, WIDTH, "");
+        formatter.printHelp(pw, WIDTH, CMD_SORT, HEADER_SORT
+                , createOptionsSort(), LEFT_PAD, DESC_PAD, "");
 
         pw.flush();
         out.flush();
@@ -468,6 +518,7 @@ public class CLI {
         sb.append(createHelpAdd());
         sb.append(createHelpRemove());
         sb.append(createHelpShow());
+        sb.append(createHelpSort());
         sb.append(createHelpConfig());
         sb.append(createHelpQuit());
 

@@ -28,6 +28,7 @@ public class CLITest {
     private CLI cli;
     private String parent;
 
+    // TODO create folder in tempFolder
     public final String NAME = "folder_name";
     public final String PATH = "/home/kusy/git/filemover/_testfolder2";
     public final List<String> EXTENSIONS = new ArrayList<>(Arrays.asList("ext1", "ext2", "ext3"));

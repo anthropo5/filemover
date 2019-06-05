@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
 
         Application app = new Application();
-        app.run();
+        app.init();
 
         CLI ui = new CLI(app);
         ui.runCLI();
